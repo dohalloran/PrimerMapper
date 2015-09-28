@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>Load PrimerMapper file</title>
+    <script src="fabric.js"></script>
+    <script src="jquery-1.11.3.min.js"></script>
+    <style>
+        a:hover {
+            background-color: orange;
+        }
+    </style>
+</head>
+
+<body>
+    <form>
+        <br>
+        <br>
+        <font face="verdana" size="4" color="green">Select a PrimerMapper canvas file:</font>
+        <br>
+        <input id="rad1" type="radio" name="glyph" value="arrow" checked>arrow
+        <br>
+        <input id="rad2" type="radio" name="glyph" value="line">line
+        <br>
+        <div id="page-wrapper">
+            <input type="file" id="fileInput">
+            <pre id="fileDisplayArea">
+        </pre>
+        </div>
+        <br><font face="verdana" color="green">click <mark>submit</mark> to parse the file and generate a primer map:</font>
+        <button type="button" onclick="loaderMy()">submit</button>
+        <input type="reset" value="Reset">
+        <br>
+        <br>
+        <a href="#" onClick="document.body.style.zoom=2.5; return false"><B><font face="verdana" color="blue">zoom in&nbsp;&nbsp;</font></B></a>
+        <a href="#" onClick="document.body.style.zoom=.5; return false"><B><font face="verdana" color="blue">zoom out&nbsp;&nbsp;</font></B></a>
+        <a href="#" onClick="document.body.style.zoom=0; return false"><B><font face="verdana" color="blue">reset zoom</font></B></a>
+    </form>
+    <script src="gene.js"></script>
+</body>
+<br>
+<br>
+<br>
+<div id='canvas_container'>
+    <div id='ruler' class='ruler' data-items=''></div>
+    <canvas id="canvas" width="12000" height="6000"></canvas>
+    <script src="primermapper.js"></script>
+    <link href="primermapper.css" rel="stylesheet" type="text/css">
+</div>
+
+
+
+</html>
