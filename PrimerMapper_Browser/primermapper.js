@@ -61,7 +61,7 @@ function loaderMy() {
     var primer_start_R = replaced_start_R.split(',');
     var primer_length_R = replaced_length_R.split(',');
 
-    var canvas = new fabric.Canvas('canvas');
+    var canvas = new fabric.Canvas('canvas2');
 
     line_length = gene_len;
 
