@@ -27,6 +27,7 @@ function loaderMy() {
     var start_R = "";
     var length_F = "";
     var length_R = "";
+    var dnaForPrimer_with_label = "";
     var dnaSequence = [];
     var splittedLines = document.getElementById("page-wrapper").innerText;
     dnaSequence = splittedLines.split('\n');
@@ -44,12 +45,17 @@ function loaderMy() {
             length_R = dnaSequence[i];
         } else if (dnaSequence[i].match(/>/)) {
             gene_name = dnaSequence[i];
+        } else if (dnaSequence[i].match(/SEQ/)) {
+            dnaForPrimer_with_label = dnaSequence[i];
         }
     }
 
 
     var gene_len = gene_length.replace("#", "");
     var geneName = gene_name.replace(">", "");
+
+    var dnaForPrimers = dnaForPrimer_with_label.replace("SEQ", "");
+    dnaForPrimers = dnaForPrimers.replace(/\s+/g, '');
 
     var replaced_start_F = start_F.replace("FS", "");
     var replaced_start_R = start_R.replace("RS", "");
@@ -61,14 +67,21 @@ function loaderMy() {
     var primer_start_R = replaced_start_R.split(',');
     var primer_length_R = replaced_length_R.split(',');
 
+
+
+    //////////////////////////////
+
+    /////DRAW RULER 
+
+
     var canvas = new fabric.Canvas('canvas2');
 
     line_length = gene_len;
 
-    adjusted_length = (line_length / 666) * 100;
+    adjusted_length = (line_length / 666) * 167;
 
     canvas.add(new fabric.Line([0, 0, adjusted_length, 0], {
-        left: 30,
+        left: 50,
         top: 0,
         stroke: '#d89300',
         strokeWidth: 3
@@ -97,8 +110,108 @@ function loaderMy() {
     }
 
 
+    //////////////////////////////
+
+    /////MAP MOUSE POSITION
+
+    function mousePos() {
+        canvas.add(new fabric.Text('base pairs', {
+            fontStyle: 'italic',
+            fontFamily: 'Hoefler Text',
+            fontSize: 12,
+            left: 0,
+            top: 10,
+            hasControls: false,
+            selectable: false
+        }));
+
+        canvas.on('mouse:move', function (options) {
+            getMouse(options);
+        });
+
+
+        function getMouse(options) {
+            canvas.getObjects('text')[0].text =
+                "base pairs: " + Math.round(Math.round(funcAdjust(options.e.clientX) - 13.5) * 15.9);
+            canvas.renderAll();
+        }
+
+    }
+
+    mousePos();
+
+    //////////////////////////////
+    /////DRAW PRIMERS 
+
+    var canvasNewer = new fabric.Canvas('canvas3');
+
+    function drawMyPrimers() {
+        canvasNewer.add(new fabric.Text('draw primers:', {
+            fontStyle: 'italic',
+            fontFamily: 'Hoefler Text',
+            fontSize: 12,
+            left: 0,
+            top: 0,
+            hasControls: false,
+            selectable: false
+        }));
+
+        canvasNewer.getObjects('text')[0].text = "draw primers:";
+
+        var getPosit = [];
+        canvasNewer.on('mouse:down', function (o) {
+            isDown = true;
+            var pointer = canvasNewer.getPointer(o.e);
+            var posX1 = pointer.x;
+            getPosit.push(posX1);
+            var points = [pointer.x, pointer.y, pointer.x, pointer.y];
+            line = new fabric.Line(points, {
+                strokeWidth: 2,
+                fill: 'green',
+                stroke: 'green',
+                originX: 'center',
+                originY: 'center'
+            });
+            canvasNewer.add(line);
+        });
+
+
+        canvasNewer.on('mouse:move', function (o) {
+            if (!isDown) return;
+            var pointer = canvasNewer.getPointer(o.e);
+            line.set({
+                x2: pointer.x,
+                y2: pointer.y
+            });
+            canvasNewer.renderAll();
+        });
+
+        canvasNewer.on('mouse:up', function (o) {
+            var pointer = canvasNewer.getPointer(o.e);
+            var posX2 = pointer.x;
+            getPosit.push(posX2);
+            isDown = false;
+            var startPrimer = getPosit[0];
+            var endPrimer = getPosit[1];
+            var startScaled = Math.round(Math.round(funcAdjust(startPrimer) - 12.5) * 15.9);
+            var endScaled = Math.round(Math.round(funcAdjust(endPrimer) - 12.5) * 15.9);
+            var primer = dnaForPrimers.substring(startScaled, endScaled);
+            alert(primer);
+            getPosit = [];
+        });
+
+    }
+
+    drawMyPrimers();
+
+    //////////////////////////////
+
+
+    /////MAP PRIMERS
+
     var canvasNew = document.getElementById('canvas');
     var context = canvasNew.getContext('2d');
+
 
     context.font = "12px Georgia";
     context.fillText("PrimerMapper results for " + geneName, 10, 20);
@@ -185,7 +298,7 @@ function loaderMy() {
             var adjusted_primer_length_F = funcAdjust(primer_length_F[k]);
             leftOver_F += 15;
 
-            var line = new Line(30 + adjusted_primer_start_F, leftOver_F, 30 + adjusted_primer_start_F + adjusted_primer_length_F, leftOver_F);
+            var line = new Line(30 + adjusted_primer_start_F, leftOver_F, 40 + adjusted_primer_start_F + adjusted_primer_length_F, leftOver_F);
             line.drawWithArrowheads(context);
             context.font = "8px Arial";
             context.fillText(primer_start_F[k], adjusted_primer_start_F + 5, leftOver_F + 3);
@@ -199,10 +312,10 @@ function loaderMy() {
             var adjusted_primer_length_R = funcAdjust(primer_length_R[j]);
             leftOver_R += 15;
 
-            var line2 = new LineR(30 + adjusted_primer_start_R, leftOver_R, 30 + adjusted_primer_start_R + adjusted_primer_length_R, leftOver_R);
+            var line2 = new LineR(30 + adjusted_primer_start_R, leftOver_R, 40 + adjusted_primer_start_R + adjusted_primer_length_R, leftOver_R);
             line2.drawWithArrowheads(context);
             context.font = "8px Arial";
-            context.fillText(primer_start_R[j], adjusted_primer_start_R + 42, leftOver_R + 3);
+            context.fillText(primer_start_R[j], adjusted_primer_start_R + 62, leftOver_R + 3);
 
 
         }
@@ -241,7 +354,7 @@ function loaderMy() {
             context.strokeStyle = '#FF0000';
             context.stroke();
             context.font = "8px Arial";
-            context.fillText(primer_start_R[j], adjusted_primer_start_R + 42, leftOver_R + 3);
+            context.fillText(primer_start_R[j], adjusted_primer_start_R + 62, leftOver_R + 3);
 
 
 
@@ -254,7 +367,10 @@ function loaderMy() {
 
     function funcAdjust(start_bp) {
 
-        var adjusted = (start_bp / 666) * 100;
+        var adjusted = (start_bp / 666) * 167;
         return adjusted;
     }
+
+
+
 }
