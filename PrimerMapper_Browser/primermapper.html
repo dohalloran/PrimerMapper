@@ -9,6 +9,7 @@
         a:hover {
             background-color: orange;
         }
+
     </style>
 </head>
 
@@ -16,40 +17,46 @@
     <form>
         <br>
         <br>
-        <font face="verdana" size="4" color="green">Select a PrimerMapper canvas file:</font>
+        <B><font face="verdana" size="4" color="green">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select a PrimerMapper canvas file:</font></B>
         <br>
+        <br>
+        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <input id="rad1" type="radio" name="glyph" value="arrow" checked>arrow
-        <br>
+        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <input id="rad2" type="radio" name="glyph" value="line">line
         <br>
         <div id="page-wrapper">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <input type="file" id="fileInput">
             <pre id="fileDisplayArea">
         </pre>
         </div>
-        <br><font face="verdana" color="green">click <mark>submit</mark> to parse the file and generate a primer map:</font>
+        <br><font face="verdana" color="green">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;click <mark>submit</mark> to parse the file and generate a primer map:</font>
         <button type="button" onclick="loaderMy()">submit</button>
-         <input type="reset" value="Reset" onClick="window.location.reload()">
+        <input type="reset" value="Reset" onClick="window.location.reload()">
         <br>
-        <br>
-        <a href="#" onClick="document.body.style.zoom=2.5; return false"><B><font face="verdana" color="blue">zoom in&nbsp;&nbsp;</font></B></a>
-        <a href="#" onClick="document.body.style.zoom=.5; return false"><B><font face="verdana" color="blue">zoom out&nbsp;&nbsp;</font></B></a>
+        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="#" onClick="document.body.style.zoom=2.5; return false"><B><font face="verdana" color="blue">zoom in&nbsp;&nbsp;</font></B></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="#" onClick="document.body.style.zoom=.5; return false"><B><font face="verdana" color="blue">zoom out&nbsp;&nbsp;</font></B></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <a href="#" onClick="document.body.style.zoom=0; return false"><B><font face="verdana" color="blue">reset zoom</font></B></a>
-        <br><br>
+        <br>
+        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <a href="http://dohalloran.github.io/PrimerMapper/"><font face="verdana" color="green">HELP</font></a>
     </form>
-    <script src="gene.js"></script>
 </body>
 <br>
 <br>
 <br>
 <div id='canvas_container'>
     <div id='ruler' class='ruler' data-items=''></div>
-    <canvas id="canvas2" width="12000" height="10"></canvas>
+    <canvas id="canvas2" width="12000" height="35"></canvas>
+    <canvas id="canvas3" width="12000" height="20"></canvas>
     <canvas id="canvas" width="12000" height="6000"></canvas>
     <script src="primermapper.js"></script>
     <link href="primermapper.css" rel="stylesheet" type="text/css">
+
 </div>
+
 
 
 
