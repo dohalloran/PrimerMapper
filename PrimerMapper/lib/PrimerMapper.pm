@@ -58,6 +58,7 @@ Provides the following:
 5. Remote sequence access from GenBank and dbSNP
 6. Primer BLAST facility against multiple NCBI databases 
 7. Generates primer dimer scores for all primers generated to facilitate multiplex PCR expts
+8. Provides browser visualization of primer maps and permits the user to draw new primers
 
 Author: Damien O'Halloran, The George Washington University, 2015
 
@@ -851,7 +852,7 @@ sub calculate
         
            if ($html eq "Y") {
               open CANVASFILE, ">>$outputfile_html";
-               print CANVASFILE "FS\tLF\tRS\tLR\t>\t#\n\t\t\t\t$id\t$len_seq\n";
+               print CANVASFILE "FS\tLF\tRS\tLR\t>\t#\tSEQ\n\t\t\t\t$id\t$len_seq\t$sequence\n";
                close CANVASFILE;
            }
 
