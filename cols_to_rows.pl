@@ -3,10 +3,10 @@
 use strict;
 use warnings;
 
-# my $out_dir = 'Browser_PrimerMapper';
-# if ( !-e $out_dir ) {
-#     mkdir($out_dir) or die "Failed to create the output directory ($out_dir): $!\n";
-# }
+ my $out_dir = 'Browser_PrimerMapper';
+ if ( !-e $out_dir ) {
+     mkdir($out_dir) or die "Failed to create the output directory ($out_dir): $!\n";
+ }
 
 my $gene_name = $ARGV[0];
 my $outfile = "CANVAS.txt";
@@ -33,9 +33,11 @@ foreach (@names) {
 
 close CANVASFILE;
 
+END;
+
 my $output_canvas = "$gene_name.CANVAS.txt";
 open CANVASFILE, "<$outfile" or die "Couldn't open file: $!";
-open OUTER, ">$output_canvas" or die "Couldn't open file: $!";
+open OUTER, ">$out_dir/$output_canvas" or die "Couldn't open file: $!";
 
 while (<CANVASFILE>) {
     s/,$//;
