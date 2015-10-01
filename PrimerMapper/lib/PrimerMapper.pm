@@ -1831,8 +1831,8 @@ sub calculate
               }
           }
       }
-       my $direc = cwd();
-       foreach my $fp ( glob("$direc/canvas_*.txt") ) {
+
+       foreach my $fp ( glob("canvas_*.txt") ) {
        open my $fh, "<", $fp or die;
        my $commander = "perl cols_to_rows.pl $fp";
     system($commander);
