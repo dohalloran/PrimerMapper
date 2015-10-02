@@ -196,7 +196,13 @@ function loaderMy() {
             var startScaled = Math.round(Math.round(funcAdjust(startPrimer) - 12.5) * 15.9);
             var endScaled = Math.round(Math.round(funcAdjust(endPrimer) - 12.5) * 15.9);
             var primer = dnaForPrimers.substring(startScaled, endScaled);
+            
+            if (endScaled >= startScaled) {
             alert(primer);
+            }
+            else {
+              alert(reverse(primer));
+            }
             getPosit = [];
         });
 
@@ -362,7 +368,21 @@ function loaderMy() {
 
     }
 
+function reverse(s){
+    return s.split("").map(complement).reverse().join("");
+}
+    
 
+function complement(nucleotide) {
+    var complements = {
+        'A' : 'T',
+        'C' : 'G',
+        'G' : 'C',
+        'T' : 'A'
+    };
+
+    return complements[nucleotide];
+}
 
 
     function funcAdjust(start_bp) {
