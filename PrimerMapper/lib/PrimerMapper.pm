@@ -86,7 +86,7 @@ my $selfie_cuttof   = "9";
 my $outputfile      = "primers.tsv";
 my $min_size_seq    = "300";
 my $format          = ".png";
-my $html          = "N";
+my $html          = "Y";
 ###########################
 
 ####Strings, Arrays, and Hashes
