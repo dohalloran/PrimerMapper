@@ -196,12 +196,11 @@ function loaderMy() {
             var startScaled = Math.round(Math.round(funcAdjust(startPrimer) - 12.5) * 15.9);
             var endScaled = Math.round(Math.round(funcAdjust(endPrimer) - 12.5) * 15.9);
             var primer = dnaForPrimers.substring(startScaled, endScaled);
-            
+
             if (endScaled >= startScaled) {
-            alert(primer);
-            }
-            else {
-              alert(reverse(primer));
+                alert(primer);
+            } else {
+                alert(reverse(primer));
             }
             getPosit = [];
         });
@@ -368,21 +367,21 @@ function loaderMy() {
 
     }
 
-function reverse(s){
-    return s.split("").map(complement).reverse().join("");
-}
-    
+    function reverse(s) {
+        return s.split("").map(complement).reverse().join("");
+    }
 
-function complement(nucleotide) {
-    var complements = {
-        'A' : 'T',
-        'C' : 'G',
-        'G' : 'C',
-        'T' : 'A'
-    };
 
-    return complements[nucleotide];
-}
+    function complement(nucleotide) {
+        var complements = {
+            'A': 'T',
+            'C': 'G',
+            'G': 'C',
+            'T': 'A'
+        };
+
+        return complements[nucleotide];
+    }
 
 
     function funcAdjust(start_bp) {
@@ -391,6 +390,31 @@ function complement(nucleotide) {
         return adjusted;
     }
 
+    ///////////
+    //////////magnifying glass
+    if (document.getElementById('lens').checked) {
+        var zoom = document.getElementById("zoom");
+        var zoomCtx = zoom.getContext("2d");
+        canvasNew.addEventListener("mousemove", function (e) {
+            console.log(e);
+            //zoomCtx.fillStyle = "white";
+            zoomCtx.clearRect(0, 0, zoom.width, zoom.height);
+            zoomCtx.fillStyle = "transparent";
+            //zoomCtx.fillRect(0,0, zoom.width, zoom.height);
+            zoomCtx.drawImage(canvasNew, e.x, e.y - 120, 1600, 800, 0, 0, 3200, 1600);
+            console.log(zoom.style);
+            zoom.style.top = e.pageY - 5 + "px"
+            zoom.style.left = e.pageX + 20 + "px"
+            zoom.style.display = "block";
+        });
+
+        canvasNew.addEventListener("mouseout", function () {
+            zoom.style.display = "none";
+        });
+    }
+    //////////
+    //////////
+    ///////////
 
 
 }
