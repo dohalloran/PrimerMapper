@@ -9,7 +9,6 @@
         a:hover {
             background-color: orange;
         }
-
     </style>
 </head>
 
@@ -17,13 +16,7 @@
     <form>
         <br>
         <br>
-        <B><font face="verdana" size="4" color="green">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select a PrimerMapper canvas file:</font></B>
-        <br>
-        <br>
-        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <input id="rad1" type="radio" name="glyph" value="arrow" checked>arrow
-        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <input id="rad2" type="radio" name="glyph" value="line">line
+        <B><font face="verdana" size="4" color="green">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select a PrimerMapper canvas file:</B>
         <br>
         <div id="page-wrapper">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -31,18 +24,21 @@
             <pre id="fileDisplayArea">
         </pre>
         </div>
-        <br><font face="verdana" color="green">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;click <mark>submit</mark> to parse the file and generate a primer map:</font>
-        <button type="button" onclick="loaderMy()">submit</button>
-        <input type="reset" value="Reset" onClick="window.location.reload()">
+    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="rad1" type="radio" name="glyph" value="arrow" checked>arrow
+    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="rad2" type="radio" name="glyph" value="line">line</font>
         <br>
         <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="#" onClick="document.body.style.zoom=2.5; return false"><B><font face="verdana" color="blue">zoom in&nbsp;&nbsp;</font></B></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="#" onClick="document.body.style.zoom=.5; return false"><B><font face="verdana" color="blue">zoom out&nbsp;&nbsp;</font></B></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="#" onClick="document.body.style.zoom=0; return false"><B><font face="verdana" color="blue">reset zoom</font></B></a>
+    <font face="verdana" size="4" color="green">&nbsp;&nbsp;<input id="lens" type="checkbox" name="zoomer" value="magnifying_glass">magnifying glass</font>
+        <br>
+        <br>
+    <font face="verdana" color="green">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;click <mark>submit</mark> to parse the file and generate a primer map:</font>
+        <button type="button" onclick="loaderMy()">submit</button>
+        <input type="reset" value="Reset" onClick="window.location.reload()">
+          </form>
+        <br>
         <br>
         <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <a href="http://dohalloran.github.io/PrimerMapper/"><font face="verdana" color="green">HELP</font></a>
-    </form>
 </body>
 <br>
 <br>
@@ -52,6 +48,7 @@
     <canvas id="canvas2" width="12000" height="35"></canvas>
     <canvas id="canvas3" width="12000" height="20"></canvas>
     <canvas id="canvas" width="12000" height="6000"></canvas>
+    <canvas id="zoom" width="5000" height="2500" style="position:absolute; top:0; left:0; display:none"></canvas>
     <script src="primermapper.js"></script>
     <link href="primermapper.css" rel="stylesheet" type="text/css">
 
