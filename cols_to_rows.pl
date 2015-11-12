@@ -3,13 +3,14 @@
 use strict;
 use warnings;
 
- my $out_dir = 'Browser_PrimerMapper';
- if ( !-e $out_dir ) {
-     mkdir($out_dir) or die "Failed to create the output directory ($out_dir): $!\n";
- }
+my $out_dir = 'Browser_PrimerMapper';
+if ( !-e $out_dir ) {
+    mkdir($out_dir)
+      or die "Failed to create the output directory ($out_dir): $!\n";
+}
 
 my $gene_name = $ARGV[0];
-my $outfile = "CANVAS.txt";
+my $outfile   = "CANVAS.txt";
 open CANVASFILE, ">$outfile" or die "Couldn't open file: $!";
 
 my %data;
@@ -49,4 +50,5 @@ close OUTER;
 close CANVASFILE;
 
 unlink $outfile;
+
 
