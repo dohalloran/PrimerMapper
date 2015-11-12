@@ -1,75 +1,92 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
-    <title>Load PrimerMapper file</title>
-    <img src="image.png" />
-    <script src="fabric.js"></script>
-    <script src="jquery-1.11.3.min.js"></script>
+    <title>PrimerMapper</title>
+    <img src="icon/image.png" /></img>
+    <script src="lib/jquery-1.11.3.min.js"></script>
+    <script src="lib/fabric.js"></script>
+    <script src="primermapper.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/primermapper.css">
+    <link rel="stylesheet" type="text/css" href="css/introjs.css"></link>
     <style>
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
-
-li {
-    float: left;
-}
-
-a:link, a:visited {
-    display: block;
-    width: 120px;
-    font-weight: bold;
-    color: #FFFFFF;
-    background-color: #98bf21;
-    text-align: center;
-    padding: 4px;
-    text-decoration: none;
-    text-transform: uppercase;
-}
-a:hover, a:active {
-    background-color: #7A991A;
-}
-</style>
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        li {
+            float: left;
+        }
+        a:link,
+        a:visited {
+            display: block;
+            width: 120px;
+            font-weight: bold;
+            color: #4c4cff;
+            background-color: #98bf21;
+            text-align: center;
+            padding: 4px;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+        a:hover,
+        a:active {
+            background-color: #7A991A;
+        }
+    </style>
 </head>
+
 <body>
-<ul>
-  <li><a href="http://dohalloran.github.io/PrimerMapper/">GitHub</a></li>
-  <li><a href="https://github.com/dohalloran/PrimerMapper">Repo</a></li>
-  <li><a href="#contact">Citation</a></li>
-</ul>
-</head>
+    <ul>
+        <li><a href="https://github.com/dohalloran/PrimerMapper">Repo</a>
+        </li>
+        <li><a href="http://dohalloran.github.io/PrimerMapper/" data-step="7" data-intro="Visit the GitHub Page for PrimerMapper">GitHub</a>
+        </li>
+        <li><a href="http://www.nature.com/srep/" data-step="8" data-intro="View the citation to PrimerMapper here">Citation</a>
+        </li>
+    </ul>
+    </head>
     <br>
     <style>
         font:hover {
             color: red;
         }
     </style>
-<body>
     <form>
-        <B><font face="verdana" size="4" color="green">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select a PrimerMapper canvas file:</B>
-
+        <B><font face="verdana" size="4" color="green">Select a PrimerMapper canvas file:</B>
         </font>
         <br>
         <br>
         <div id="page-wrapper">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="file" id="fileInput">
-            <pre id="fileDisplayArea">
-        </pre>
-        </div><font face="verdana" size="4" color="green">
-    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="rad1" type="radio" name="glyph" value="arrow" checked>arrow
-    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="rad2" type="radio" name="glyph" value="line">line</font>
+            <input type="file" id="fileInput" data-step="1" data-intro="Load a PrimerMapper text file"></input>
+            <pre id="fileDisplayArea"></pre>
+        </div>
+        <font face="verdana" size="4" color="green">
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id="rad1" data-step="2" data-intro="Visualize the primers as arrows" type="radio" name="glyph"               value="arrow" checked>arrow</input>
+    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id="rad2" data-step="3" data-intro="Visualize the primers as lines" type="radio" name="glyph"               value="line">line</font>
+        </input>
         <br>
-        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <font face="verdana" size="4" color="green">&nbsp;&nbsp;<input id="lens" type="checkbox" name="zoomer" value="magnifying_glass">magnifying glass</font>
+        <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <font face="verdana" size="4" color="green">&nbsp;&nbsp;
+            <input id="lens" data-step="4" data-intro="Check here for an ability to magnify the primer names" type="checkbox" name="zoomer" value="magnifying_glass">magnifying glass</font>
+        </input>
         <br>
         <br>
-        <font face="verdana" color="green">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;click <mark>submit</mark> to parse the file and generate a primer map:</font>
-        <button type="button" onclick="loaderMy()">submit</button>
-        <input type="reset" value="Reset" onClick="window.location.reload()">
+        <font face="verdana" color="green">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;click<mark>submit</mark> to parse the file and generate a primer map:</font>
+        <button type="button" onclick="loaderMy()" data-step="5" data-intro="Click 'Submit' to convert the loaded PrimerMapper text file to a graphical map">submit</button>
+        <input type="reset" value="Reset" onClick="window.location.reload()" data-step="6" data-intro="Reset the page"></input>
     </form>
+    <div class="step">
+        <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button onclick="javascript:introJs().start()">User Guide</button>
+    </div>
+    <script type="text/javascript" src="lib/intro.js"></script>
 </body>
 <br>
 <br>
@@ -80,12 +97,6 @@ a:hover, a:active {
     <canvas id="canvas3" width="12000" height="20"></canvas>
     <canvas id="canvas" width="12000" height="6000"></canvas>
     <canvas id="zoom" width="5000" height="2500" style="position:absolute; top:0; left:0; display:none"></canvas>
-    <script src="primermapper.js"></script>
-    <link href="primermapper.css" rel="stylesheet" type="text/css">
-
 </div>
-
-
-
 
 </html>
