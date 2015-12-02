@@ -1,5 +1,28 @@
 package PrimerMapper;
 
+=pod
+ 
+=head1 UTILITY
+ 
+PrimerMapper
+
+Provides the following: 
+1. a GUI to facilitate primer design and visualization
+2. Provides browser visualization of primer maps and permits the user to draw new primers
+3. Traditional primer design as well as SNP and allele specific primer design
+4. Visualization of primer distribution across each sequence and entire input file
+5. Returns primers specific to the entire input file using specificty and mis-match options 
+6. Remote sequence access from GenBank and dbSNP
+7. Primer BLAST facility against multiple NCBI databases 
+8. Generates primer dimer scores for all primers generated to facilitate multiplex PCR expts
+
+Author: Damien O'Halloran, The George Washington University, 2015
+
+To run, execute as follows: 
+>perl PrimerMapper_driver.pl 
+  
+=cut
+
 #############################################################
 #
 # PrimerMapper
@@ -43,29 +66,6 @@ sub new {
         return bless {}, $class;
 }
 #########################
-
-=pod
- 
-=head1 UTILITY
- 
-PrimerMapper
-
-Provides the following: 
-1. a GUI to facilitate primer design and visualization
-2. Provides browser visualization of primer maps and permits the user to draw new primers
-3. Traditional primer design as well as SNP and allele specific primer design
-4. Visualization of primer distribution across each sequence and entire input file
-5. Returns primers specific to the entire input file using specificty and mis-match options 
-6. Remote sequence access from GenBank and dbSNP
-7. Primer BLAST facility against multiple NCBI databases 
-8. Generates primer dimer scores for all primers generated to facilitate multiplex PCR expts
-
-Author: Damien O'Halloran, The George Washington University, 2015
-
-To run, execute as follows: 
->perl PrimerMapper_driver.pl 
-  
-=cut
 
 ####Primer Design Defaults
 my $fasta;
@@ -264,6 +264,14 @@ my $outputfile_SNP_AS = "Allele_specific_primers.tsv";
 my $degen;
 ###########################
 
+
+####################################
+####Interface Begins####
+####################################
+####################################
+####################################
+####################################
+####################################
 ####Load the Tkx interface
 my $mw = Tkx::widget->new(".");
 $mw->g_wm_title("PrimerMapper");
@@ -678,6 +686,13 @@ sub exit_program {
         Tkx::tk___messageBox( -message => "Exiting PrimerMapper" );
         $mw->g_destroy;
 }
+####################################
+####Interface Ends####
+####################################
+####################################
+####################################
+####################################
+####################################
 
 ####Start subs
 sub get_sequences {
@@ -821,6 +836,14 @@ sub calculate {
 "FS\tLF\tRS\tLR\t>\t#\tSEQ\n\t\t\t\t$id\t$len_seq\t$sequence\n";
                 close CANVASFILE;
 
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+######## FORWARD PRIMER
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+########################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+   
 ######## FORWARD PRIMER
                 #start counting
                 my $start = 1;
@@ -1067,6 +1090,14 @@ sub calculate {
                         }
                 }
 
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+######## REVERSE PRIMER
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+########################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+   
 ######## REVERSE PRIMER
 
                 #start counting for reverse primer
@@ -1446,7 +1477,14 @@ sub calculate_SNP {
 "Header\tTm(degC)\tAllele Specific Primer Sequences\t\tSelf-comp\tHairpin\tGC%\n";
                 close AS_SNP;
 
-######## FORWARD PRIMER
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+######## FORWARD SNP PRIMER
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+########################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+   
                 #start counting
                 my $upstream = $snp - $five_prime_SNP;
 
@@ -1700,7 +1738,14 @@ sub calculate_SNP {
                         }
                 }
 
-######## REVERSE PRIMER
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+######## REVERSE SNP PRIMER
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+########################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+   
 
                 #start counting for reverse primer
                 my $downstream = $snp + $three_prime_SNP;
@@ -1967,7 +2012,14 @@ sub calculate_SNP {
                                 }
                         }
                 }
-
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+######## ALLELE SPECIFIC PRIMER
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+########################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+   
                 ####################______Allele-Specific_BEGIN
 
                 for ( my $p = $kmer_min_SNP ; $p <= $kmer_max_SNP ; $p++ ) {
@@ -2215,7 +2267,11 @@ sub calculate_SNP {
 Tkx::MainLoop();
 
 ####################################
-####SUBROUTINES####
+####GENERAL SUBROUTINES####
+####################################
+####################################
+####################################
+####################################
 ####################################
 use re qw(eval);
 use vars qw($matchStart);
@@ -2458,6 +2514,13 @@ sub min3 {
         $tmp < $k ? $tmp : $k;
 }
 
+####################################
+####################################
+####GRAPHIC FILE SUBROUTINES####
+####################################
+####################################
+####################################
+####################################
 ####################################
 sub graphics_all_primers {
         print "\nDesigning Grahical output files....\n";
@@ -2858,6 +2921,13 @@ sub graphics_single_view_SNP {
 }
 
 ####################################
+####################################
+####PRIMER DIMER SUBROUTINE####
+####################################
+####################################
+####################################
+####################################
+####################################
 sub primer_dimer {
         print
 "\nCalculating global primer dimer score file for multiplex PCR....\n";
@@ -2963,6 +3033,13 @@ sub uniq {
 }
 
 ####################################
+####################################
+####CLEAN-UP SUBROUTINES####
+####################################
+####################################
+####################################
+####################################
+####################################
 sub clean_up {
         my $dir = cwd();
         unlink glob "$dir/*.txt";
@@ -2977,6 +3054,13 @@ sub clean_up {
 Note: must have web_blast.pl script in PATH for BLAST feature 
 =cut
 
+####################################
+####################################
+####BLAST SUBROUTINES####
+####################################
+####################################
+####################################
+####################################
 ####################################
 sub web_blast_ncbi {
 
