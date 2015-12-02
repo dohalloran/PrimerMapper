@@ -44,16 +44,9 @@ use Bio::SeqIO;
 use Bio::Graphics;
 use Bio::SeqFeature::Generic;
 use List::Util 'max';
-use base 'Exporter';
 ####
 
 #########################
-
-our @EXPORT =
-  qw( get_sequences get_sequences_SNP loadfile loadfile_SNP calculate calculate_SNP match_positions
-  fuzzy_pattern make_approximate calclongTm calcdG calcTm selfie graphics_all_primers graphics_single_view
-  graphics_all_primers_SNP graphics_single_view_SNP primer_dimer primer_dimer_SNP clean_up web_blast_ncbi );
-
 #########################
 #########################
 
@@ -67,7 +60,7 @@ sub new {
 }
 #########################
 
-####Primer Design Defaults
+####Global Primer Design Defaults
 my $fasta;
 my $five_prime_end  = "150";
 my $three_prime_end = "150";
@@ -89,7 +82,7 @@ my $format          = ".png";
 my $repetition      = "N";
 ###########################
 
-####Strings, Arrays, and Hashes
+####Global Strings, Arrays, and Hashes
 my $outfile;
 my $outputfile_html;
 my $out_single = "single_viewer.txt";
@@ -109,7 +102,7 @@ my $out_image;
 my $kmer_diff = $kmer_max - $kmer_min;
 my $blaster;
 ###########################
-
+####Global Hashes
 my %nn_s = (
              "AA" => 240,
              "AC" => 173,
@@ -215,7 +208,7 @@ my %nn_h = (
              "nn" => 80
 );
 
-####SNP Primer Design Defaults
+####Global SNP Primer Design Defaults
 my $fasta_SNP;
 my $fasta_SNP_NEW;
 my $five_prime_SNP    = "120";
@@ -236,7 +229,7 @@ my $outputfile_SNP    = "SNP_primers.tsv";
 my $snp_distance      = "30";
 ###########################
 
-####SNP Strings and Hashes
+####Global SNP Strings and Hashes
 my $kmer_diff_SNP = $kmer_max_SNP - $kmer_min_SNP;
 my $kmer_SNP;
 my $snp;
@@ -694,7 +687,7 @@ sub exit_program {
 ####################################
 ####################################
 
-####Start subs
+####Collect Seqs remotely
 sub get_sequences {
         $seq_in =~ s/\s//g;
 
@@ -716,6 +709,7 @@ sub get_sequences {
 
 }
 
+####Collect SNP Seqs remotely
 sub get_sequences_SNP {
         $seq_in_SNP =~ s/\s//g;
 
@@ -736,6 +730,7 @@ sub get_sequences_SNP {
         print "\nSequences collected.\n";
 }
 
+####Load Seqs into PrimerMapper 
 sub loadfile {
         $fasta = Tkx::tk___getOpenFile();
 
@@ -763,6 +758,7 @@ sub loadfile {
 
 }
 
+####Load SNP Seqs into PrimerMapper 
 sub loadfile_SNP {
         $fasta_SNP = Tkx::tk___getOpenFile();
 
@@ -790,6 +786,7 @@ sub loadfile_SNP {
 
 }
 
+####Parse fasta sequence using BioSeqIO
 sub calculate {
         my $seqio = Bio::SeqIO->new( -file   => $fasta,
                                      -format => "fasta", );
@@ -1364,6 +1361,14 @@ sub calculate {
         print "\nPrimer Design completed.\n";
 }
 
+
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+######## START SNP PRIMER DESIGN
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+########################################>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+########################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+################################################################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
 sub calculate_SNP {
 
         $fasta_SNP_NEW = "processed_SNP.fasta";
