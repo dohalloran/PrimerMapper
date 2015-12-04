@@ -3,5 +3,7 @@ MANIFEST
 README
 t/PrimerMapper.t
 lib/PrimerMapper.pm
+lib/PrimerMapperGraphics.pm
+lib/PrimerMapperUtilities.pm
 
 

@@ -26,6 +26,7 @@ The package require these modules and libraries:
   Bio::Graphics
   Bio::SeqFeature::Generic
   List::Util 'max'
+  base 'Exporter'
   
 
 COPYRIGHT AND LICENCE
