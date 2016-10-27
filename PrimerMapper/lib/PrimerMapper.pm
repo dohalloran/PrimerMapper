@@ -230,19 +230,19 @@ my $degen;
 ####################################
 =head1 Load the Tkx interface
  Title   :  Tkx::MainLoop();
- Usage   :  my $mw = Tkx::widget->new(".");
+ Usage   :  my $main_window = Tkx::widget->new(".");
  Function:  Loads the Tkx interface 
  Returns :  GUI 
 =cut
 
-my $mw = Tkx::widget->new(".");
-$mw->g_wm_title("PrimerMapper");
-my $frm = $mw->new_ttk__frame( -padding => "3 3 12 12" );
-$frm->g_grid( -column => 0, -row => 0, -sticky => "nwes" );
+my $main_window = Tkx::widget->new(".");
+$main_window->g_wm_title("PrimerMapper");
+my $outer_frame = $main_window->new_ttk__frame( -padding => "3 3 12 12" );
+$outer_frame->g_grid( -column => 0, -row => 0, -sticky => "nwes" );
 
-my $lf = $frm->new_ttk__labelframe( -text => "INPUT" );
-$lf->new_ttk__frame( -padding => "3 3 12 12" );
-$lf->g_grid(
+my $input_frame = $outer_frame->new_ttk__labelframe( -text => "INPUT" );
+$input_frame->new_ttk__frame( -padding => "3 3 12 12" );
+$input_frame->g_grid(
     -column     => 0,
     -columnspan => 5,
     -rowspan    => 1,
@@ -250,22 +250,22 @@ $lf->g_grid(
     -sticky     => "nwes"
 );
 
-my $ef = $lf->new_ttk__entry( -width => 40, -textvariable => \$fasta );
-$ef->g_grid( -column => 1, -row => 0, -sticky => "we" );
-my $em = $lf->new_ttk__button( -text => "Load File", -command => \&loadfile );
-$em->g_grid( -column => 0, -row => 0, -sticky => "w" );
-my $de = $lf->new_ttk__entry( -width => 40, -textvariable => \$seq_in );
-$de->g_grid( -column => 4, -row => 0, -sticky => "w" );
-my $bc = $lf->new_ttk__button(
+my $input_ = $input_frame->new_ttk__entry( -width => 40, -textvariable => \$fasta );
+$input_->g_grid( -column => 1, -row => 0, -sticky => "we" );
+my $load_file_ = $input_frame->new_ttk__button( -text => "Load File", -command => \&loadfile );
+$load_file_->g_grid( -column => 0, -row => 0, -sticky => "w" );
+my $load_seq_ = $input_frame->new_ttk__entry( -width => 40, -textvariable => \$seq_in );
+$load_seq_->g_grid( -column => 4, -row => 0, -sticky => "w" );
+my $get_seqs_ = $input_frame->new_ttk__button(
     -text    => "Get Sequences",
     -command => sub { get_sequences(); }
 );
-$bc->g_grid( -column => 2, -row => 0, -sticky => "w" );
+$get_seqs_->g_grid( -column => 2, -row => 0, -sticky => "w" );
 
 ########## SNP TOP
-my $elf = $frm->new_ttk__labelframe( -text => "SNP INPUT" );
-$elf->new_ttk__frame( -padding => "3 3 12 12" );
-$elf->g_grid(
+my $outer_frame_snp = $outer_frame->new_ttk__labelframe( -text => "SNP INPUT" );
+$outer_frame_snp->new_ttk__frame( -padding => "3 3 12 12" );
+$outer_frame_snp->g_grid(
     -column     => 0,
     -columnspan => 5,
     -rowspan    => 1,
@@ -274,22 +274,22 @@ $elf->g_grid(
     -pady       => 10
 );
 
-my $fef = $elf->new_ttk__entry( -width => 40, -textvariable => \$fasta_SNP );
-$fef->g_grid( -column => 1, -row => 14, -sticky => "w" );
-my $gem =
-  $elf->new_ttk__button( -text => "Load SNP File", -command => \&loadfile_SNP );
-$gem->g_grid( -column => 0, -row => 14, -sticky => "w" );
-my $dej = $elf->new_ttk__entry( -width => 40, -textvariable => \$seq_in_SNP );
-$dej->g_grid( -column => 4, -row => 14, -sticky => "w" );
-my $gbc = $elf->new_ttk__button(
+my $input_snp_ = $outer_frame_snp->new_ttk__entry( -width => 40, -textvariable => \$fasta_SNP );
+$input_snp_->g_grid( -column => 1, -row => 14, -sticky => "w" );
+my $load_snp_ =
+  $outer_frame_snp->new_ttk__button( -text => "Load SNP File", -command => \&loadfile_SNP );
+$load_snp_->g_grid( -column => 0, -row => 14, -sticky => "w" );
+my $load_seq_snp_ = $outer_frame_snp->new_ttk__entry( -width => 40, -textvariable => \$seq_in_SNP );
+$load_seq_snp_->g_grid( -column => 4, -row => 14, -sticky => "w" );
+my $get_snp_seqs_ = $outer_frame_snp->new_ttk__button(
     -text    => "Get SNP Sequences",
     -command => sub { get_sequences_SNP(); }
 );
-$gbc->g_grid( -column => 2, -row => 14, -sticky => "w" );
+$get_snp_seqs_->g_grid( -column => 2, -row => 14, -sticky => "w" );
 
-my $djh = $frm->new_ttk__labelframe( -text => "PRIMER DESIGN" );
-$djh->new_ttk__frame( -padding => "3 3 12 12" );
-$djh->g_grid(
+my $design_frame_ = $outer_frame->new_ttk__labelframe( -text => "PRIMER DESIGN" );
+$design_frame_->new_ttk__frame( -padding => "3 3 12 12" );
+$design_frame_->g_grid(
     -column     => 0,
     -columnspan => 2,
     -rowspan    => 1,
@@ -297,134 +297,135 @@ $djh->g_grid(
     -sticky     => "nwes"
 );
 
-my $dgh = $djh->new_ttk__entry(
+my $five_prime_snp_ = $design_frame_->new_ttk__entry(
     -width        => 3,
     -textvariable => \$five_prime_SNP
 );
-$dgh->g_grid( -column => 2, -row => 2, -sticky => "we" );
+$five_prime_snp_->g_grid( -column => 2, -row => 2, -sticky => "we" );
 
-my $dhi = $djh->new_ttk__entry(
+my $three_prime_snp_ = $design_frame_->new_ttk__entry(
     -width        => 3,
     -textvariable => \$three_prime_SNP
 );
-$dhi->g_grid( -column => 5, -row => 2, -sticky => "we" );
+$three_prime_snp_->g_grid( -column => 5, -row => 2, -sticky => "we" );
 
-my $djk = $djh->new_ttk__entry( -width => 3, -textvariable => \$kmer_max_SNP );
-$djk->g_grid( -column => 2, -row => 3, -sticky => "we" );
+my $kmer_max_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$kmer_max_SNP );
+$kmer_max_snp_->g_grid( -column => 2, -row => 3, -sticky => "we" );
 
-my $dkl = $djh->new_ttk__entry( -width => 3, -textvariable => \$kmer_min_SNP );
-$dkl->g_grid( -column => 5, -row => 3, -sticky => "we" );
+my $kmer_min_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$kmer_min_SNP );
+$kmer_min_snp_->g_grid( -column => 5, -row => 3, -sticky => "we" );
 
-my $dlm = $djh->new_ttk__entry( -width => 3, -textvariable => \$higher_gc_SNP );
-$dlm->g_grid( -column => 2, -row => 4, -sticky => "we" );
+my $upper_gc_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$higher_gc_SNP );
+$upper_gc_snp_->g_grid( -column => 2, -row => 4, -sticky => "we" );
 
-my $dmn = $djh->new_ttk__entry( -width => 3, -textvariable => \$lower_gc_SNP );
-$dmn->g_grid( -column => 5, -row => 4, -sticky => "we" );
+my $lower_gc_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$lower_gc_SNP );
+$lower_gc_snp_->g_grid( -column => 5, -row => 4, -sticky => "we" );
 
-my $dno = $djh->new_ttk__entry( -width => 3, -textvariable => \$upper_tm_SNP );
-$dno->g_grid( -column => 2, -row => 5, -sticky => "we" );
+my $upper_tm_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$upper_tm_SNP );
+$upper_tm_snp_->g_grid( -column => 2, -row => 5, -sticky => "we" );
 
-my $dop = $djh->new_ttk__entry( -width => 3, -textvariable => \$lower_tm_SNP );
-$dop->g_grid( -column => 5, -row => 5, -sticky => "we" );
+my $lower_tm_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$lower_tm_SNP );
+$lower_tm_snp_->g_grid( -column => 5, -row => 5, -sticky => "we" );
 
-my $dpq = $djh->new_ttk__entry( -width => 3, -textvariable => \$clamp_SNP );
-$dpq->g_grid( -column => 2, -row => 6, -sticky => "e" );
+my $gc_clamp_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$clamp_SNP );
+$gc_clamp_snp_->g_grid( -column => 2, -row => 6, -sticky => "e" );
 
-my $dpz = $djh->new_ttk__entry( -width => 3, -textvariable => \$salt_SNP );
-$dpz->g_grid( -column => 2, -row => 7, -sticky => "we" );
+my $salt_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$salt_SNP );
+$salt_snp_->g_grid( -column => 2, -row => 7, -sticky => "we" );
 
-my $dqr = $djh->new_ttk__entry( -width => 3, -textvariable => \$spec_SNP );
-$dqr->g_grid( -column => 5, -row => 6, -sticky => "w" );
+my $specific_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$spec_SNP );
+$specific_snp_->g_grid( -column => 5, -row => 6, -sticky => "w" );
 
-my $drs = $djh->new_ttk__entry( -width => 3, -textvariable => \$mis_SNP );
-$drs->g_grid( -column => 5, -row => 7, -sticky => "w" );
+my $mis_match_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$mis_SNP );
+$mis_match_snp_->g_grid( -column => 5, -row => 7, -sticky => "w" );
 
-my $dpgz = $djh->new_ttk__entry( -width => 3, -textvariable => \$DNA_conc_SNP );
-$dpgz->g_grid( -column => 7, -row => 2, -sticky => "we" );
+my $dna_concentration_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$DNA_conc_SNP );
+$dna_concentration_snp_->g_grid( -column => 7, -row => 2, -sticky => "we" );
 
-my $dghy =
-  $djh->new_ttk__entry( -width => 10, -textvariable => \$outputfile_SNP );
-$dghy->g_grid( -column => 7, -row => 3, -sticky => "we" );
+my $outfile_snp_ =
+  $design_frame_->new_ttk__entry( -width => 10, -textvariable => \$outputfile_SNP );
+$outfile_snp_->g_grid( -column => 7, -row => 3, -sticky => "we" );
 
-my $dgjy =
-  $djh->new_ttk__entry( -width => 10, -textvariable => \$selfie_cuttof_SNP );
-$dgjy->g_grid( -column => 7, -row => 4, -sticky => "we" );
+my $self_comp_snp_ =
+  $design_frame_->new_ttk__entry( -width => 10, -textvariable => \$selfie_cuttof_SNP );
+$self_comp_snp_->g_grid( -column => 7, -row => 4, -sticky => "we" );
 
-my $fdgjy = $djh->new_ttk__entry( -width => 10, -textvariable => \$format );
-$fdgjy->g_grid( -column => 7, -row => 6, -sticky => "we" );
+my $format_snp_ = $design_frame_->new_ttk__entry( -width => 10, -textvariable => \$format );
+$format_snp_->g_grid( -column => 7, -row => 6, -sticky => "we" );
 
-my $dgjxy =
-  $djh->new_ttk__entry( -width => 10, -textvariable => \$snp_distance );
-$dgjxy->g_grid( -column => 7, -row => 5, -sticky => "we" );
+my $snp_distance_ =
+  $design_frame_->new_ttk__entry( -width => 10, -textvariable => \$snp_distance );
+$snp_distance_->g_grid( -column => 7, -row => 5, -sticky => "we" );
 
-my $rdgjxy =
-  $djh->new_ttk__entry( -width => 10, -textvariable => \$min_size_seq );
-$rdgjxy->g_grid( -column => 7, -row => 7, -sticky => "we" );
+my $min_size_snp_ =
+  $design_frame_->new_ttk__entry( -width => 10, -textvariable => \$min_size_seq );
+$min_size_snp_->g_grid( -column => 7, -row => 7, -sticky => "we" );
 
-my $dabc = $djh->new_ttk__label( -text => "5' up from SNP" );
-$dabc->g_grid( -column => 1, -row => 2, -sticky => "w" );
+my $distance_from_snp_ = $design_frame_->new_ttk__label( -text => "5' up from SNP" );
+$distance_from_snp_->g_grid( -column => 1, -row => 2, -sticky => "w" );
 
-my $dbca = $djh->new_ttk__label( -text => "3' down from SNP" );
-$dbca->g_grid( -column => 4, -row => 2, -sticky => "w" );
+my $distance_down_from_snp_ = $design_frame_->new_ttk__label( -text => "3' down from SNP" );
+$distance_down_from_snp_->g_grid( -column => 4, -row => 2, -sticky => "w" );
 
-my $dcba = $djh->new_ttk__label( -text => "Primer length max" );
-$dcba->g_grid( -column => 1, -row => 3, -sticky => "w" );
+my $max_primer_len_snp_ = $design_frame_->new_ttk__label( -text => "Primer length max" );
+$max_primer_len_snp_->g_grid( -column => 1, -row => 3, -sticky => "w" );
 
-my $dcab = $djh->new_ttk__label( -text => "Primer length min" );
-$dcab->g_grid( -column => 4, -row => 3, -sticky => "w" );
+my $min_primer_len_snp_ = $design_frame_->new_ttk__label( -text => "Primer length min" );
+$min_primer_len_snp_->g_grid( -column => 4, -row => 3, -sticky => "w" );
 
-my $ddef = $djh->new_ttk__label( -text => "Upper GC%" );
-$ddef->g_grid( -column => 1, -row => 4, -sticky => "w" );
+my $max_gc_snp_ = $design_frame_->new_ttk__label( -text => "Upper GC%" );
+$max_gc_snp_->g_grid( -column => 1, -row => 4, -sticky => "w" );
 
-my $defg = $djh->new_ttk__label( -text => "Lower GC%" );
-$defg->g_grid( -column => 4, -row => 4, -sticky => "w" );
+my $min_gc_snp_ = $design_frame_->new_ttk__label( -text => "Lower GC%" );
+$min_gc_snp_->g_grid( -column => 4, -row => 4, -sticky => "w" );
 
-my $dhij = $djh->new_ttk__label( -text => "Upper Tm" );
-$dhij->g_grid( -column => 1, -row => 5, -sticky => "w" );
+my $max_tm_snp_ = $design_frame_->new_ttk__label( -text => "Upper Tm" );
+$max_tm_snp_->g_grid( -column => 1, -row => 5, -sticky => "w" );
 
-my $dijk = $djh->new_ttk__label( -text => "Lower Tm" );
-$dijk->g_grid( -column => 4, -row => 5, -sticky => "w" );
+my $min_tm_snp_ = $design_frame_->new_ttk__label( -text => "Lower Tm" );
+$min_tm_snp_->g_grid( -column => 4, -row => 5, -sticky => "w" );
 
-my $djkl = $djh->new_ttk__label( -text => "GC clamp (Y/N)" );
-$djkl->g_grid( -column => 1, -row => 6, -sticky => "w" );
+my $clamp_snp_ = $design_frame_->new_ttk__label( -text => "GC clamp (Y/N)" );
+$clamp_snp_->g_grid( -column => 1, -row => 6, -sticky => "w" );
 
-my $dklm = $djh->new_ttk__label( -text => "input specificity (Y/N)" );
-$dklm->g_grid( -column => 4, -row => 6, -sticky => "w" );
+my $sequence_specific_snp_ = $design_frame_->new_ttk__label( -text => "input specificity (Y/N)" );
+$sequence_specific_snp_->g_grid( -column => 4, -row => 6, -sticky => "w" );
 
-my $dlmn = $djh->new_ttk__label( -text => "mis-matches" );
-$dlmn->g_grid( -column => 4, -row => 7, -sticky => "w" );
+my $sequence_mismatch_snp_ = $design_frame_->new_ttk__label( -text => "mis-matches" );
+$sequence_mismatch_snp_->g_grid( -column => 4, -row => 7, -sticky => "w" );
 
-my $dlzn = $djh->new_ttk__label( -text => "salt concentration (mM)" );
-$dlzn->g_grid( -column => 1, -row => 7, -sticky => "w" );
+my $nacl_concentration_snp_ = $design_frame_->new_ttk__label( -text => "salt concentration (mM)" );
+$nacl_concentration_snp_->g_grid( -column => 1, -row => 7, -sticky => "w" );
 
-my $dlnf = $djh->new_ttk__label( -text => "DNA concentration (nM)" );
-$dlnf->g_grid( -column => 6, -row => 2, -sticky => "w" );
+my $dna_snp_ = $design_frame_->new_ttk__label( -text => "DNA concentration (nM)" );
+$dna_snp_->g_grid( -column => 6, -row => 2, -sticky => "w" );
 
-my $dltf = $djh->new_ttk__label( -text => "SNP Primer file" );
-$dltf->g_grid( -column => 6, -row => 3, -sticky => "w" );
+my $snp_outfile_ = $design_frame_->new_ttk__label( -text => "SNP Primer file" );
+$snp_outfile_->g_grid( -column => 6, -row => 3, -sticky => "w" );
 
-my $dlqf = $djh->new_ttk__label( -text => "Self-complementarity" );
-$dlqf->g_grid( -column => 6, -row => 4, -sticky => "w" );
+my $self_snp_ = $design_frame_->new_ttk__label( -text => "Self-complementarity" );
+$self_snp_->g_grid( -column => 6, -row => 4, -sticky => "w" );
 
-my $dlxqf = $djh->new_ttk__label( -text => "Minimum distance from SNP" );
-$dlxqf->g_grid( -column => 6, -row => 5, -sticky => "w" );
+my $min_basepairs_from_snp_ = $design_frame_->new_ttk__label( -text => "Minimum distance from SNP" );
+$min_basepairs_from_snp_->g_grid( -column => 6, -row => 5, -sticky => "w" );
 
-my $adlxqf = $djh->new_ttk__label( -text => "Graphic format (.png or .gif)" );
-$adlxqf->g_grid( -column => 6, -row => 6, -sticky => "w" );
+my $outfile_format_snp_ = $design_frame_->new_ttk__label( -text => "Graphic format (.png or .gif)" );
+$outfile_format_snp_->g_grid( -column => 6, -row => 6, -sticky => "w" );
 
-my $ladlxqf = $djh->new_ttk__label( -text => "Minimum size sequence" );
-$ladlxqf->g_grid( -column => 6, -row => 7, -sticky => "w" );
+my $min_input_size_snp_ = $design_frame_->new_ttk__label( -text => "Minimum size sequence" );
+$min_input_size_snp_->g_grid( -column => 6, -row => 7, -sticky => "w" );
 
-foreach ( Tkx::SplitList( $djh->g_winfo_children ) ) {
+foreach ( Tkx::SplitList( $design_frame_->g_winfo_children ) ) {
     Tkx::grid_configure( $_, -padx => 5, -pady => 5 );
 }
 
-my $dzs =
-  $frm->new_ttk__labelframe( -text => "RUN", -width => 10, -height => 60 );
-$dzs->new_ttk__frame( -padding => "3 3 12 12" );
-$dzs->g_grid( -column => 0, -row => 28, -sticky => "nwes" );
+my $run_snp_frame_ =
+  $outer_frame->new_ttk__labelframe( -text => "RUN", -width => 10, -height => 60 );
+$run_snp_frame_->new_ttk__frame( -padding => "3 3 12 12" );
+$run_snp_frame_->g_grid( -column => 0, -row => 28, -sticky => "nwes" );
 
-my $dst = $dzs->new_ttk__button(
+
+my $design_snp_frame_ = $run_snp_frame_->new_ttk__button(
     -text    => "1: Design SNP Primers and Graphics",
     -command => sub {
         calculate_SNP();
@@ -433,25 +434,25 @@ my $dst = $dzs->new_ttk__button(
         graphics_single_view_SNP( \@gene_length_SNP, $format, $out_single_SNP );
     }
 );
-$dst->g_grid( -column => 1, -row => 9, -sticky => "e" );
+$design_snp_frame_->g_grid( -column => 1, -row => 9, -sticky => "e" );
 
-my $xduv = $dzs->new_ttk__button(
+my $multiple_snp_ = $run_snp_frame_->new_ttk__button(
     -text    => "2: Multiplex PCR dimer scores",
     -command => sub { primer_dimer_SNP(); }
 );
-$xduv->g_grid( -column => 4, -row => 9, -sticky => "s" );
+$multiple_snp_->g_grid( -column => 4, -row => 9, -sticky => "s" );
 
-my $duv = $dzs->new_ttk__button(
+my $clean_up_snp_ = $run_snp_frame_->new_ttk__button(
     -text    => "3: Clean-up (run last)",
     -command => sub { clean_up(); }
 );
-$duv->g_grid( -column => 5, -row => 9, -sticky => "s" );
+$clean_up_snp_->g_grid( -column => 5, -row => 9, -sticky => "s" );
 
 ########## SNP BTM
 
-my $doh = $frm->new_ttk__labelframe( -text => "PRIMER DESIGN" );
-$doh->new_ttk__frame( -padding => "3 3 12 12" );
-$doh->g_grid(
+my $out_frame_primers = $outer_frame->new_ttk__labelframe( -text => "PRIMER DESIGN" );
+$out_frame_primers->new_ttk__frame( -padding => "3 3 12 12" );
+$out_frame_primers->g_grid(
     -column     => 0,
     -columnspan => 2,
     -rowspan    => 1,
@@ -459,137 +460,137 @@ $doh->g_grid(
     -sticky     => "nwes"
 );
 
-my $gh = $doh->new_ttk__entry(
+my $five_primer_ending_ = $out_frame_primers->new_ttk__entry(
     -width        => 3,
     -textvariable => \$five_prime_end
 );
-$gh->g_grid( -column => 2, -row => 2, -sticky => "we" );
+$five_primer_ending_->g_grid( -column => 2, -row => 2, -sticky => "we" );
 
-my $hi = $doh->new_ttk__entry(
+my $three_primer_ending_ = $out_frame_primers->new_ttk__entry(
     -width        => 3,
     -textvariable => \$three_prime_end
 );
-$hi->g_grid( -column => 5, -row => 2, -sticky => "we" );
+$three_primer_ending_->g_grid( -column => 5, -row => 2, -sticky => "we" );
 
-my $jk = $doh->new_ttk__entry( -width => 3, -textvariable => \$kmer_max );
-$jk->g_grid( -column => 2, -row => 3, -sticky => "we" );
+my $max_primer_size_allowed_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$kmer_max );
+$max_primer_size_allowed_->g_grid( -column => 2, -row => 3, -sticky => "we" );
 
-my $kl = $doh->new_ttk__entry( -width => 3, -textvariable => \$kmer_min );
-$kl->g_grid( -column => 5, -row => 3, -sticky => "we" );
+my $min_primer_size_allowed_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$kmer_min );
+$min_primer_size_allowed_->g_grid( -column => 5, -row => 3, -sticky => "we" );
 
-my $lm = $doh->new_ttk__entry( -width => 3, -textvariable => \$higher_gc );
-$lm->g_grid( -column => 2, -row => 4, -sticky => "we" );
+my $max_gc_content_allowed_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$higher_gc );
+$max_gc_content_allowed_->g_grid( -column => 2, -row => 4, -sticky => "we" );
 
-my $mn = $doh->new_ttk__entry( -width => 3, -textvariable => \$lower_gc );
-$mn->g_grid( -column => 5, -row => 4, -sticky => "we" );
+my $min_gc_content_allowed_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$lower_gc );
+$min_gc_content_allowed_->g_grid( -column => 5, -row => 4, -sticky => "we" );
 
-my $no = $doh->new_ttk__entry( -width => 3, -textvariable => \$upper_tm );
-$no->g_grid( -column => 2, -row => 5, -sticky => "we" );
+my $max_primer_tm_allowed_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$upper_tm );
+$max_primer_tm_allowed_->g_grid( -column => 2, -row => 5, -sticky => "we" );
 
-my $op = $doh->new_ttk__entry( -width => 3, -textvariable => \$lower_tm );
-$op->g_grid( -column => 5, -row => 5, -sticky => "we" );
+my $min_primer_tm_allowed_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$lower_tm );
+$min_primer_tm_allowed_->g_grid( -column => 5, -row => 5, -sticky => "we" );
 
-my $pq = $doh->new_ttk__entry( -width => 3, -textvariable => \$clamp );
-$pq->g_grid( -column => 2, -row => 6, -sticky => "e" );
+my $add_gc_clamp_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$clamp );
+$add_gc_clamp_->g_grid( -column => 2, -row => 6, -sticky => "e" );
 
-my $pz = $doh->new_ttk__entry( -width => 3, -textvariable => \$salt );
-$pz->g_grid( -column => 2, -row => 7, -sticky => "we" );
+my $sodium_chloride_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$salt );
+$sodium_chloride_->g_grid( -column => 2, -row => 7, -sticky => "we" );
 
-my $qr = $doh->new_ttk__entry( -width => 3, -textvariable => \$spec );
-$qr->g_grid( -column => 5, -row => 6, -sticky => "w" );
+my $input_specific__ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$spec );
+$input_specific__->g_grid( -column => 5, -row => 6, -sticky => "w" );
 
-my $rs = $doh->new_ttk__entry( -width => 3, -textvariable => \$mis );
-$rs->g_grid( -column => 5, -row => 7, -sticky => "w" );
+my $permit_mis_matches_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$mis );
+$permit_mis_matches_->g_grid( -column => 5, -row => 7, -sticky => "w" );
 
-my $pgz = $doh->new_ttk__entry( -width => 3, -textvariable => \$DNA_conc );
-$pgz->g_grid( -column => 7, -row => 2, -sticky => "we" );
+my $dna_concentr_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$DNA_conc );
+$dna_concentr_->g_grid( -column => 7, -row => 2, -sticky => "we" );
 
-my $ghy = $doh->new_ttk__entry( -width => 10, -textvariable => \$outputfile );
-$ghy->g_grid( -column => 7, -row => 3, -sticky => "we" );
+my $outfile__ = $out_frame_primers->new_ttk__entry( -width => 10, -textvariable => \$outputfile );
+$outfile__->g_grid( -column => 7, -row => 3, -sticky => "we" );
 
-my $gjy =
-  $doh->new_ttk__entry( -width => 10, -textvariable => \$selfie_cuttof );
-$gjy->g_grid( -column => 7, -row => 4, -sticky => "we" );
+my $self_complement_score_ =
+  $out_frame_primers->new_ttk__entry( -width => 10, -textvariable => \$selfie_cuttof );
+$self_complement_score_->g_grid( -column => 7, -row => 4, -sticky => "we" );
 
-my $afdgjy = $doh->new_ttk__entry( -width => 10, -textvariable => \$format );
-$afdgjy->g_grid( -column => 7, -row => 5, -sticky => "we" );
+my $format__ = $out_frame_primers->new_ttk__entry( -width => 10, -textvariable => \$format );
+$format__->g_grid( -column => 7, -row => 5, -sticky => "we" );
 
-my $xafdgjy =
-  $doh->new_ttk__entry( -width => 10, -textvariable => \$min_size_seq );
-$xafdgjy->g_grid( -column => 7, -row => 6, -sticky => "we" );
+my $minimum_sequence_size_allowed_ =
+  $out_frame_primers->new_ttk__entry( -width => 10, -textvariable => \$min_size_seq );
+$minimum_sequence_size_allowed_->g_grid( -column => 7, -row => 6, -sticky => "we" );
 
-my $htmlafdgjy =
-  $doh->new_ttk__entry( -width => 10, -textvariable => \$repetition );
-$htmlafdgjy->g_grid( -column => 7, -row => 7, -sticky => "we" );
+my $repetitive_seq_allowed_ =
+  $out_frame_primers->new_ttk__entry( -width => 10, -textvariable => \$repetition );
+$repetitive_seq_allowed_->g_grid( -column => 7, -row => 7, -sticky => "we" );
 
-my $zs =
-  $frm->new_ttk__labelframe( -text => "RUN", -width => 10, -height => 40 );
-$zs->new_ttk__frame( -padding => "3 3 12 12" );
-$zs->g_grid( -column => 0, -row => 8, -sticky => "nwes" );
+my $run_frame__ =
+  $outer_frame->new_ttk__labelframe( -text => "RUN", -width => 10, -height => 40 );
+$run_frame__->new_ttk__frame( -padding => "3 3 12 12" );
+$run_frame__->g_grid( -column => 0, -row => 8, -sticky => "nwes" );
 
-my $sp = $mw->new_ttk__labelframe(
+my $blast_frame_ = $main_window->new_ttk__labelframe(
     -text => "BLAST PRIMERS - insert primers here in fastA format" );
-$sp->new_ttk__frame( -padding => "3 3 12 12" );
-$sp->g_grid( -column => 0, -row => 10, -sticky => "nwes" );
+$blast_frame_->new_ttk__frame( -padding => "3 3 12 12" );
+$blast_frame_->g_grid( -column => 0, -row => 10, -sticky => "nwes" );
 
-my $text = $sp->new_tk__text( -width => 80, -height => 6, -wrap => "none" );
+my $text = $blast_frame_->new_tk__text( -width => 80, -height => 6, -wrap => "none" );
 $text->g_grid;
 my $thetext;
 
-my $xxtuz = $mw->new_ttk__button(
+my $exit_ = $main_window->new_ttk__button(
     -text    => "EXIT",
     -command => sub { exit_program(); }
 );
-$xxtuz->g_grid( -column => 0, -row => 14, -sticky => "s" );
+$exit_->g_grid( -column => 0, -row => 14, -sticky => "s" );
 
-my $gfd = $mw->new_ttk__labelframe( -text => "SELECT DATABASE:" );
-$gfd->g_grid( -column => 0, -row => 12, -sticky => "nwes" );
+my $which_db_ = $main_window->new_ttk__labelframe( -text => "SELECT DATABASE:" );
+$which_db_->g_grid( -column => 0, -row => 12, -sticky => "nwes" );
 
-my $hme = $gfd->new_ttk__radiobutton(
+my $nt_db_ = $which_db_->new_ttk__radiobutton(
     -text     => "Nucleotide collection (nt)",
     -variable => \$blaster,
     -value    => "nt"
 );
-my $ofz = $gfd->new_ttk__radiobutton(
+my $human_gDNA_db_ = $which_db_->new_ttk__radiobutton(
     -text     => "Genomic Human",
     -variable => \$blaster,
     -value    => "human_genomic"
 );
-my $cez = $gfd->new_ttk__radiobutton(
+my $other_db_ = $which_db_->new_ttk__radiobutton(
     -text     => "Genomic others",
     -variable => \$blaster,
     -value    => "other_genomic"
 );
-my $ahme = $gfd->new_ttk__radiobutton(
+my $est_db_ = $which_db_->new_ttk__radiobutton(
     -text     => "EST others",
     -variable => \$blaster,
     -value    => "est_others"
 );
-my $aofz = $gfd->new_ttk__radiobutton(
+my $est_human_db_ = $which_db_->new_ttk__radiobutton(
     -text     => "EST Human",
     -variable => \$blaster,
     -value    => "est_human"
 );
-my $acez = $gfd->new_ttk__radiobutton(
+my $est_mouse_db_ = $which_db_->new_ttk__radiobutton(
     -text     => "EST Mouse",
     -variable => \$blaster,
     -value    => "est_mouse"
 );
 
-$hme->g_grid( -column => 0, -row => 13, -sticky => "w" );
-$ofz->g_grid( -column => 1, -row => 13, -sticky => "w" );
-$cez->g_grid( -column => 2, -row => 13, -sticky => "w" );
-$ahme->g_grid( -column => 3, -row => 13, -sticky => "w" );
-$aofz->g_grid( -column => 4, -row => 13, -sticky => "w" );
-$acez->g_grid( -column => 5, -row => 13, -sticky => "w" );
+$nt_db_->g_grid( -column => 0, -row => 13, -sticky => "w" );
+$human_gDNA_db_->g_grid( -column => 1, -row => 13, -sticky => "w" );
+$other_db_->g_grid( -column => 2, -row => 13, -sticky => "w" );
+$est_db_->g_grid( -column => 3, -row => 13, -sticky => "w" );
+$est_human_db_->g_grid( -column => 4, -row => 13, -sticky => "w" );
+$est_mouse_db_->g_grid( -column => 5, -row => 13, -sticky => "w" );
 
-my $tuz = $gfd->new_ttk__button(
+my $blast_run_ = $which_db_->new_ttk__button(
     -text    => "BLAST",
     -command => sub { web_blast_ncbi(); }
 );
-$tuz->g_grid( -column => 0, -row => 14, -sticky => "w" );
+$blast_run_->g_grid( -column => 0, -row => 14, -sticky => "w" );
 
-my $st = $zs->new_ttk__button(
+my $get_the_primers_ = $run_frame__->new_ttk__button(
     -text    => "1: Design Primers and Graphics (run this first)",
     -command => sub {
         calculate();
@@ -598,81 +599,81 @@ my $st = $zs->new_ttk__button(
         graphics_single_view( \@gene_length, $format, $out_single );
     }
 );
-$st->g_grid( -column => 1, -row => 9, -sticky => "e" );
+$get_the_primers_->g_grid( -column => 1, -row => 9, -sticky => "e" );
 
-my $ghuv = $zs->new_ttk__button(
+my $multiplex__ = $run_frame__->new_ttk__button(
     -text    => "2: Multiplex PCR dimer scores",
     -command => sub { primer_dimer(); }
 );
-$ghuv->g_grid( -column => 4, -row => 9, -sticky => "s" );
+$multiplex__->g_grid( -column => 4, -row => 9, -sticky => "s" );
 
-my $uv = $zs->new_ttk__button(
+my $cleaner__ = $run_frame__->new_ttk__button(
     -text    => "3: Clean-up (run last)",
     -command => sub { clean_up(); }
 );
-$uv->g_grid( -column => 5, -row => 9, -sticky => "s" );
+$cleaner__->g_grid( -column => 5, -row => 9, -sticky => "s" );
 
-my $abc = $doh->new_ttk__label( -text => "5' search area" );
+my $abc = $out_frame_primers->new_ttk__label( -text => "5' search area" );
 $abc->g_grid( -column => 1, -row => 2, -sticky => "w" );
 
-my $bca = $doh->new_ttk__label( -text => "3' search area" );
+my $bca = $out_frame_primers->new_ttk__label( -text => "3' search area" );
 $bca->g_grid( -column => 4, -row => 2, -sticky => "w" );
 
-my $cba = $doh->new_ttk__label( -text => "Primer length max" );
+my $cba = $out_frame_primers->new_ttk__label( -text => "Primer length max" );
 $cba->g_grid( -column => 1, -row => 3, -sticky => "w" );
 
-my $cab = $doh->new_ttk__label( -text => "Primer length min" );
+my $cab = $out_frame_primers->new_ttk__label( -text => "Primer length min" );
 $cab->g_grid( -column => 4, -row => 3, -sticky => "w" );
 
-my $def = $doh->new_ttk__label( -text => "Upper GC%" );
+my $def = $out_frame_primers->new_ttk__label( -text => "Upper GC%" );
 $def->g_grid( -column => 1, -row => 4, -sticky => "w" );
 
-my $efg = $doh->new_ttk__label( -text => "Lower GC%" );
-$efg->g_grid( -column => 4, -row => 4, -sticky => "w" );
+my $input_g = $out_frame_primers->new_ttk__label( -text => "Lower GC%" );
+$input_g->g_grid( -column => 4, -row => 4, -sticky => "w" );
 
-my $hij = $doh->new_ttk__label( -text => "Upper Tm" );
+my $hij = $out_frame_primers->new_ttk__label( -text => "Upper Tm" );
 $hij->g_grid( -column => 1, -row => 5, -sticky => "w" );
 
-my $ijk = $doh->new_ttk__label( -text => "Lower Tm" );
+my $ijk = $out_frame_primers->new_ttk__label( -text => "Lower Tm" );
 $ijk->g_grid( -column => 4, -row => 5, -sticky => "w" );
 
-my $jkl = $doh->new_ttk__label( -text => "GC clamp (Y/N)" );
+my $jkl = $out_frame_primers->new_ttk__label( -text => "GC clamp (Y/N)" );
 $jkl->g_grid( -column => 1, -row => 6, -sticky => "w" );
 
-my $klm = $doh->new_ttk__label( -text => "input specificity (Y/N)" );
+my $klm = $out_frame_primers->new_ttk__label( -text => "input specificity (Y/N)" );
 $klm->g_grid( -column => 4, -row => 6, -sticky => "w" );
 
-my $lmn = $doh->new_ttk__label( -text => "mis-matches" );
+my $lmn = $out_frame_primers->new_ttk__label( -text => "mis-matches" );
 $lmn->g_grid( -column => 4, -row => 7, -sticky => "w" );
 
-my $lzn = $doh->new_ttk__label( -text => "salt concentration (mM)" );
+my $lzn = $out_frame_primers->new_ttk__label( -text => "salt concentration (mM)" );
 $lzn->g_grid( -column => 1, -row => 7, -sticky => "w" );
 
-my $lnf = $doh->new_ttk__label( -text => "DNA concentration (nM)" );
+my $lnf = $out_frame_primers->new_ttk__label( -text => "DNA concentration (nM)" );
 $lnf->g_grid( -column => 6, -row => 2, -sticky => "w" );
 
-my $ltf = $doh->new_ttk__label( -text => "Primer text file" );
+my $ltf = $out_frame_primers->new_ttk__label( -text => "Primer text file" );
 $ltf->g_grid( -column => 6, -row => 3, -sticky => "w" );
 
-my $lqf = $doh->new_ttk__label( -text => "Self-complementarity" );
+my $lqf = $out_frame_primers->new_ttk__label( -text => "Self-complementarity" );
 $lqf->g_grid( -column => 6, -row => 4, -sticky => "w" );
 
-my $alqf = $doh->new_ttk__label( -text => "Graphic format (.png or .gif)" );
+my $alqf = $out_frame_primers->new_ttk__label( -text => "Graphic format (.png or .gif)" );
 $alqf->g_grid( -column => 6, -row => 5, -sticky => "w" );
 
-my $galqf = $doh->new_ttk__label( -text => "Minimum size sequence" );
+my $galqf = $out_frame_primers->new_ttk__label( -text => "Minimum size sequence" );
 $galqf->g_grid( -column => 6, -row => 6, -sticky => "w" );
 
-my $htmlgalqf = $doh->new_ttk__label( -text => "Repetitive seq (Y/N)" );
+my $htmlgalqf = $out_frame_primers->new_ttk__label( -text => "Repetitive seq (Y/N)" );
 $htmlgalqf->g_grid( -column => 6, -row => 7, -sticky => "w" );
 
-foreach ( Tkx::SplitList( $doh->g_winfo_children ) ) {
+foreach ( Tkx::SplitList( $out_frame_primers->g_winfo_children ) ) {
     Tkx::grid_configure( $_, -padx => 5, -pady => 5 );
 }
 
 sub exit_program {
     Tkx::tk___messageBox( -message => "Exiting PrimerMapper" );
-    $mw->g_destroy;
+    $main_window->g_destroy;
 }
 ####################################
 ####Interface Ends####
