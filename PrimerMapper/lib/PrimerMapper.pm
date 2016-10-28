@@ -613,59 +613,59 @@ my $cleaner__ = $run_frame__->new_ttk__button(
 );
 $cleaner__->g_grid( -column => 5, -row => 9, -sticky => "s" );
 
-my $abc = $out_frame_primers->new_ttk__label( -text => "5' search area" );
-$abc->g_grid( -column => 1, -row => 2, -sticky => "w" );
+my $search_area_five__prime_ = $out_frame_primers->new_ttk__label( -text => "5' search area" );
+$search_area_five__prime_->g_grid( -column => 1, -row => 2, -sticky => "w" );
 
-my $bca = $out_frame_primers->new_ttk__label( -text => "3' search area" );
-$bca->g_grid( -column => 4, -row => 2, -sticky => "w" );
+my $search_area_three__prime_ = $out_frame_primers->new_ttk__label( -text => "3' search area" );
+$search_area_three__prime_->g_grid( -column => 4, -row => 2, -sticky => "w" );
 
-my $cba = $out_frame_primers->new_ttk__label( -text => "Primer length max" );
-$cba->g_grid( -column => 1, -row => 3, -sticky => "w" );
+my $max_permitted_oligo_len__ = $out_frame_primers->new_ttk__label( -text => "Primer length max" );
+$max_permitted_oligo_len__->g_grid( -column => 1, -row => 3, -sticky => "w" );
 
-my $cab = $out_frame_primers->new_ttk__label( -text => "Primer length min" );
-$cab->g_grid( -column => 4, -row => 3, -sticky => "w" );
+my $min_permitted_oligo_len__ = $out_frame_primers->new_ttk__label( -text => "Primer length min" );
+$min_permitted_oligo_len__->g_grid( -column => 4, -row => 3, -sticky => "w" );
 
-my $def = $out_frame_primers->new_ttk__label( -text => "Upper GC%" );
-$def->g_grid( -column => 1, -row => 4, -sticky => "w" );
+my $max_permitted_oligo_gc__ = $out_frame_primers->new_ttk__label( -text => "Upper GC%" );
+$max_permitted_oligo_gc__->g_grid( -column => 1, -row => 4, -sticky => "w" );
 
-my $input_g = $out_frame_primers->new_ttk__label( -text => "Lower GC%" );
-$input_g->g_grid( -column => 4, -row => 4, -sticky => "w" );
+my $min_permitted_oligo_gc__ = $out_frame_primers->new_ttk__label( -text => "Lower GC%" );
+$min_permitted_oligo_gc__->g_grid( -column => 4, -row => 4, -sticky => "w" );
 
-my $hij = $out_frame_primers->new_ttk__label( -text => "Upper Tm" );
-$hij->g_grid( -column => 1, -row => 5, -sticky => "w" );
+my $max_permitted_oligo_tm__ = $out_frame_primers->new_ttk__label( -text => "Upper Tm" );
+$max_permitted_oligo_tm__->g_grid( -column => 1, -row => 5, -sticky => "w" );
 
-my $ijk = $out_frame_primers->new_ttk__label( -text => "Lower Tm" );
-$ijk->g_grid( -column => 4, -row => 5, -sticky => "w" );
+my $min_permitted_oligo_tm__ = $out_frame_primers->new_ttk__label( -text => "Lower Tm" );
+$min_permitted_oligo_tm__->g_grid( -column => 4, -row => 5, -sticky => "w" );
 
-my $jkl = $out_frame_primers->new_ttk__label( -text => "GC clamp (Y/N)" );
-$jkl->g_grid( -column => 1, -row => 6, -sticky => "w" );
+my $clamp_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "GC clamp (Y/N)" );
+$clamp_permitted_oligo__->g_grid( -column => 1, -row => 6, -sticky => "w" );
 
-my $klm = $out_frame_primers->new_ttk__label( -text => "input specificity (Y/N)" );
-$klm->g_grid( -column => 4, -row => 6, -sticky => "w" );
+my $specific_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "input specificity (Y/N)" );
+$specific_permitted_oligo__->g_grid( -column => 4, -row => 6, -sticky => "w" );
 
-my $lmn = $out_frame_primers->new_ttk__label( -text => "mis-matches" );
-$lmn->g_grid( -column => 4, -row => 7, -sticky => "w" );
+my $mismatch_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "mis-matches" );
+$mismatch_permitted_oligo__->g_grid( -column => 4, -row => 7, -sticky => "w" );
 
-my $lzn = $out_frame_primers->new_ttk__label( -text => "salt concentration (mM)" );
-$lzn->g_grid( -column => 1, -row => 7, -sticky => "w" );
+my $nacl_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "salt concentration (mM)" );
+$nacl_permitted_oligo__->g_grid( -column => 1, -row => 7, -sticky => "w" );
 
-my $lnf = $out_frame_primers->new_ttk__label( -text => "DNA concentration (nM)" );
-$lnf->g_grid( -column => 6, -row => 2, -sticky => "w" );
+my $dna_conc_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "DNA concentration (nM)" );
+$dna_conc_permitted_oligo__->g_grid( -column => 6, -row => 2, -sticky => "w" );
 
-my $ltf = $out_frame_primers->new_ttk__label( -text => "Primer text file" );
-$ltf->g_grid( -column => 6, -row => 3, -sticky => "w" );
+my $regular_oligo_text_outfile__ = $out_frame_primers->new_ttk__label( -text => "Primer text file" );
+$regular_oligo_text_outfile__->g_grid( -column => 6, -row => 3, -sticky => "w" );
 
-my $lqf = $out_frame_primers->new_ttk__label( -text => "Self-complementarity" );
-$lqf->g_grid( -column => 6, -row => 4, -sticky => "w" );
+my $self_comp_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "Self-complementarity" );
+$self_comp_permitted_oligo__->g_grid( -column => 6, -row => 4, -sticky => "w" );
 
-my $alqf = $out_frame_primers->new_ttk__label( -text => "Graphic format (.png or .gif)" );
-$alqf->g_grid( -column => 6, -row => 5, -sticky => "w" );
+my $regular_oligo_graphic_format_outfile__ = $out_frame_primers->new_ttk__label( -text => "Graphic format (.png or .gif)" );
+$regular_oligo_graphic_format_outfile__->g_grid( -column => 6, -row => 5, -sticky => "w" );
 
-my $galqf = $out_frame_primers->new_ttk__label( -text => "Minimum size sequence" );
-$galqf->g_grid( -column => 6, -row => 6, -sticky => "w" );
+my $min_seq_size_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "Minimum size sequence" );
+$min_seq_size_permitted_oligo__->g_grid( -column => 6, -row => 6, -sticky => "w" );
 
-my $htmlgalqf = $out_frame_primers->new_ttk__label( -text => "Repetitive seq (Y/N)" );
-$htmlgalqf->g_grid( -column => 6, -row => 7, -sticky => "w" );
+my $rep_seq_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "Repetitive seq (Y/N)" );
+$rep_seq_permitted_oligo__->g_grid( -column => 6, -row => 7, -sticky => "w" );
 
 foreach ( Tkx::SplitList( $out_frame_primers->g_winfo_children ) ) {
     Tkx::grid_configure( $_, -padx => 5, -pady => 5 );
