@@ -920,158 +920,8 @@ sub calculate {
                     && $selfie_score < $selfie_cuttof
                     && calcRepeat( $_, $repetition ) == 1
                     && $hairpin > "-9"
-                    && $_ =~ m/gc$/i
-                    && $clamp eq "Y"
-                    && $spec eq "N" )
-                {
-                    print FUSIONFILE
-"$id\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
-                    push @array_length, $len_uniq;
-                    push @array_name,   $id_uniq;
-                    push @primers,      "$id:$_";
-                    open( OLIGOS, ">>$out_image" ) or die;
-                    print OLIGOS "$i\t$selfie_score\t$i\t$primer_end\n";
-                    close(OLIGOS);
-                    open( OUTS, ">>$out_single" ) or die;
-                    print OUTS "$i\t$foo\t$i\t$primer_end\n";
-                    close(OUTS);
-                    open( CANVASFILE, ">>$outputfile_html" )
-                      or die;
-                    print CANVASFILE "$i,\t$a,\n";
-                    close(CANVASFILE);
-
-                }
-                elsif (open( FUSIONFILE, ">>$outputfile" )
-                    && $Tmrounded ge $lower_tm
-                    && $Tmrounded le $upper_tm
-                    && $percentGC ge $lower_gc
-                    && $percentGC le $higher_gc
-                    && $selfie_score < $selfie_cuttof
-                    && calcRepeat( $_, $repetition ) == 1
-                    && $hairpin > "-9"
-                    && $_ =~ m/cg$/i
-                    && $clamp eq "Y"
-                    && $spec eq "N" )
-                {
-                    print FUSIONFILE
-"$id\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
-                    push @array_length, $len_uniq;
-                    push @array_name,   $id_uniq;
-                    push @primers,      "$id:$_";
-                    open( OLIGOS, ">>$out_image" ) or die;
-                    print OLIGOS "$i\t$selfie_score\t$i\t$primer_end\n";
-                    close(OLIGOS);
-                    open( OUTS, ">>$out_single" ) or die;
-                    print OUTS "$i\t$foo\t$i\t$primer_end\n";
-                    close(OUTS);
-                    open( CANVASFILE, ">>$outputfile_html" )
-                      or die;
-                    print CANVASFILE "$i,\t$a,\n";
-                    close(CANVASFILE);
-
-                }
-                elsif (open( FUSIONFILE, ">>$outputfile" )
-                    && $Tmrounded ge $lower_tm
-                    && $Tmrounded le $upper_tm
-                    && $percentGC ge $lower_gc
-                    && $percentGC le $higher_gc
-                    && $selfie_score < $selfie_cuttof
-                    && calcRepeat( $_, $repetition ) == 1
-                    && $hairpin > "-9"
-                    && $clamp eq "N"
-                    && $spec eq "N" )
-                {
-                    print FUSIONFILE
-"$id\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
-                    push @array_length, $len_uniq;
-                    push @array_name,   $id_uniq;
-                    push @primers,      "$id:$_";
-                    open( OLIGOS, ">>$out_image" ) or die;
-                    print OLIGOS "$i\t$selfie_score\t$i\t$primer_end\n";
-                    close(OLIGOS);
-                    open( OUTS, ">>$out_single" ) or die;
-                    print OUTS "$i\t$foo\t$i\t$primer_end\n";
-                    close(OUTS);
-                    open( CANVASFILE, ">>$outputfile_html" )
-                      or die;
-                    print CANVASFILE "$i,\t$a,\n";
-                    close(CANVASFILE);
-
-                }
-
-                #define dinucleotide repeats and repetitive sequence
-                #and print results if statements are matched
-                elsif (open( FUSIONFILE, ">>$outputfile" )
-                    && $Tmrounded ge $lower_tm
-                    && $Tmrounded le $upper_tm
-                    && $percentGC ge $lower_gc
-                    && $percentGC le $higher_gc
-                    && $selfie_score < $selfie_cuttof
-                    && calcRepeat( $_, $repetition ) == 1
-                    && $hairpin > "-9"
-                    && $_ =~ m/gc$/i
-                    && $clamp eq "Y"
-                    && $number_matches < 2
-                    && $spec eq "Y" )
-                {
-                    print FUSIONFILE
-"$id\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
-                    push @array_length, $len_uniq;
-                    push @array_name,   $id_uniq;
-                    push @primers,      "$id:$_";
-                    open( OLIGOS, ">>$out_image" ) or die;
-                    print OLIGOS "$i\t$selfie_score\t$i\t$primer_end\n";
-                    close(OLIGOS);
-                    open( OUTS, ">>$out_single" ) or die;
-                    print OUTS "$i\t$foo\t$i\t$primer_end\n";
-                    close(OUTS);
-                    open( CANVASFILE, ">>$outputfile_html" )
-                      or die;
-                    print CANVASFILE "$i,\t$a,\n";
-                    close(CANVASFILE);
-
-                }
-                elsif (open( FUSIONFILE, ">>$outputfile" )
-                    && $Tmrounded ge $lower_tm
-                    && $Tmrounded le $upper_tm
-                    && $percentGC ge $lower_gc
-                    && $percentGC le $higher_gc
-                    && $selfie_score < $selfie_cuttof
-                    && calcRepeat( $_, $repetition ) == 1
-                    && $hairpin > "-9"
-                    && $_ =~ m/cg$/i
-                    && $clamp eq "Y"
-                    && $number_matches < 2
-                    && $spec eq "Y" )
-                {
-                    print FUSIONFILE
-"$id\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
-                    push @array_length, $len_uniq;
-                    push @array_name,   $id_uniq;
-                    push @primers,      "$id:$_";
-                    open( OLIGOS, ">>$out_image" ) or die;
-                    print OLIGOS "$i\t$selfie_score\t$i\t$primer_end\n";
-                    close(OLIGOS);
-                    open( OUTS, ">>$out_single" ) or die;
-                    print OUTS "$i\t$foo\t$i\t$primer_end\n";
-                    close(OUTS);
-                    open( CANVASFILE, ">>$outputfile_html" )
-                      or die;
-                    print CANVASFILE "$i,\t$a,\n";
-                    close(CANVASFILE);
-
-                }
-                elsif (open( FUSIONFILE, ">>$outputfile" )
-                    && $Tmrounded ge $lower_tm
-                    && $Tmrounded le $upper_tm
-                    && $percentGC ge $lower_gc
-                    && $percentGC le $higher_gc
-                    && $selfie_score < $selfie_cuttof
-                    && calcRepeat( $_, $repetition ) == 1
-                    && $hairpin > "-9"
-                    && $clamp eq "N"
-                    && $number_matches < 2
-                    && $spec eq "Y" )
+                    && checkClamp_($_, $clamp) == 1 
+                    && checkSpecific_($number_matches, $spec) == 1 )
                 {
                     print FUSIONFILE
 "$id\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
@@ -1164,161 +1014,8 @@ sub calculate {
                     && $selfie_scoreR < $selfie_cuttof
                     && calcRepeat( $revR, $repetition ) == 1
                     && $hairpin_r > "-9"
-                    && $clamp eq "N"
-                    && $spec eq "N" )
-                {
-                    open( OLIGOS, ">>$out_image" ) or die;
-                    print OLIGOS "$j\t$selfie_scoreR\t$primer_start_R\t$j\n";
-                    close(OLIGOS);
-                    push @array_length, $len_uniq;
-                    push @array_name,   $id_uniq;
-                    push @primers,      "$id:$revR";
-                    open( OUTS, ">>$out_single" ) or die;
-                    print OUTS "$j\t$foo\t$primer_start_R\t$j\n";
-                    close(OUTS);
-                    open( CANVASFILE, ">>$outputfile_html" )
-                      or die;
-                    print CANVASFILE "\t\t$j,\t$y,\n";
-                    close(CANVASFILE);
-
-                    print FUSIONFILE
-"$id\t$j\t$Tm_rounded\tR:$revR\t$selfie_scoreR\t$percentGC_rounded\n";
-
-                }
-                elsif (open( FUSIONFILE, ">>$outputfile" )
-                    && $Tm_rounded ge $lower_tm
-                    && $Tm_rounded le $upper_tm
-                    && $percent_GC ge $lower_gc
-                    && $percent_GC le $higher_gc
-                    && $selfie_scoreR < $selfie_cuttof
-                    && calcRepeat( $revR, $repetition ) == 1
-                    && $hairpin_r > "-9"
-                    && $_ =~ m/^gc/i
-                    && $clamp eq "Y"
-                    && $spec eq "N" )
-                {
-                    open( OLIGOS, ">>$out_image" ) or die;
-                    print OLIGOS "$j\t$selfie_scoreR\t$primer_start_R\t$j\n";
-                    close(OLIGOS);
-                    push @array_length, $len_uniq;
-                    push @array_name,   $id_uniq;
-                    push @primers,      "$id:$revR";
-                    open( OUTS, ">>$out_single" ) or die;
-                    print OUTS "$j\t$foo\t$primer_start_R\t$j\n";
-                    close(OUTS);
-                    open( CANVASFILE, ">>$outputfile_html" )
-                      or die;
-                    print CANVASFILE "\t\t$j,\t$y,\n";
-                    close(CANVASFILE);
-
-                    print FUSIONFILE
-"$id\t$j\t$Tm_rounded\tR:$revR\t$selfie_scoreR\t$percentGC_rounded\n";
-
-                }
-                elsif (open( FUSIONFILE, ">>$outputfile" )
-                    && $Tm_rounded ge $lower_tm
-                    && $Tm_rounded le $upper_tm
-                    && $percent_GC ge $lower_gc
-                    && $percent_GC le $higher_gc
-                    && $selfie_scoreR < $selfie_cuttof
-                    && calcRepeat( $revR, $repetition ) == 1
-                    && $hairpin_r > "-9"
-                    && $_ =~ m/^cg/i
-                    && $clamp eq "Y"
-                    && $spec eq "N" )
-                {
-                    open( OLIGOS, ">>$out_image" ) or die;
-                    print OLIGOS "$j\t$selfie_scoreR\t$primer_start_R\t$j\n";
-                    close(OLIGOS);
-                    push @array_length, $len_uniq;
-                    push @array_name,   $id_uniq;
-                    push @primers,      "$id:$revR";
-                    open( OUTS, ">>$out_single" ) or die;
-                    print OUTS "$j\t$foo\t$primer_start_R\t$j\n";
-                    close(OUTS);
-                    open( CANVASFILE, ">>$outputfile_html" )
-                      or die;
-                    print CANVASFILE "\t\t$j,\t$y,\n";
-                    close(CANVASFILE);
-
-                    print FUSIONFILE
-"$id\t$j\t$Tm_rounded\tR:$revR\t$selfie_scoreR\t$percentGC_rounded\n";
-
-                }
-
-                elsif (open( FUSIONFILE, ">>$outputfile" )
-                    && $Tm_rounded ge $lower_tm
-                    && $Tm_rounded le $upper_tm
-                    && $percent_GC ge $lower_gc
-                    && $percent_GC le $higher_gc
-                    && $selfie_scoreR < $selfie_cuttof
-                    && calcRepeat( $revR, $repetition ) == 1
-                    && $hairpin_r > "-9"
-                    && $clamp eq "N"
-                    && $number_matches_R < 2
-                    && $spec eq "Y" )
-                {
-                    open( OLIGOS, ">>$out_image" ) or die;
-                    print OLIGOS "$j\t$selfie_scoreR\t$primer_start_R\t$j\n";
-                    close(OLIGOS);
-                    push @array_length, $len_uniq;
-                    push @array_name,   $id_uniq;
-                    push @primers,      "$id:$revR";
-                    open( OUTS, ">>$out_single" ) or die;
-                    print OUTS "$j\t$foo\t$primer_start_R\t$j\n";
-                    close(OUTS);
-                    open( CANVASFILE, ">>$outputfile_html" )
-                      or die;
-                    print CANVASFILE "\t\t$j,\t$y,\n";
-                    close(CANVASFILE);
-
-                    print FUSIONFILE
-"$id\t$j\t$Tm_rounded\tR:$revR\t$selfie_scoreR\t$percentGC_rounded\n";
-
-                }
-                elsif (open( FUSIONFILE, ">>$outputfile" )
-                    && $Tm_rounded ge $lower_tm
-                    && $Tm_rounded le $upper_tm
-                    && $percent_GC ge $lower_gc
-                    && $percent_GC le $higher_gc
-                    && $selfie_scoreR < $selfie_cuttof
-                    && calcRepeat( $revR, $repetition ) == 1
-                    && $hairpin_r > "-9"
-                    && $_ =~ m/^gc/i
-                    && $clamp eq "Y"
-                    && $number_matches_R < 2
-                    && $spec eq "Y" )
-                {
-                    open( OLIGOS, ">>$out_image" ) or die;
-                    print OLIGOS "$j\t$selfie_scoreR\t$primer_start_R\t$j\n";
-                    close(OLIGOS);
-                    push @array_length, $len_uniq;
-                    push @array_name,   $id_uniq;
-                    push @primers,      "$id:$revR";
-                    open( OUTS, ">>$out_single" ) or die;
-                    print OUTS "$j\t$foo\t$primer_start_R\t$j\n";
-                    close(OUTS);
-                    open( CANVASFILE, ">>$outputfile_html" )
-                      or die;
-                    print CANVASFILE "\t\t$j,\t$y,\n";
-                    close(CANVASFILE);
-
-                    print FUSIONFILE
-"$id\t$j\t$Tm_rounded\tR:$revR\t$selfie_scoreR\t$percentGC_rounded\n";
-
-                }
-                elsif (open( FUSIONFILE, ">>$outputfile" )
-                    && $Tm_rounded ge $lower_tm
-                    && $Tm_rounded le $upper_tm
-                    && $percent_GC ge $lower_gc
-                    && $percent_GC le $higher_gc
-                    && $selfie_scoreR < $selfie_cuttof
-                    && calcRepeat( $revR, $repetition ) == 1
-                    && $hairpin_r > "-9"
-                    && $_ =~ m/^cg/i
-                    && $clamp eq "Y"
-                    && $number_matches_R < 2
-                    && $spec eq "Y" )
+                    && checkClamp_($revR, $clamp) == 1 
+                    && checkSpecific_($number_matches_R, $spec) == 1 )
                 {
                     open( OLIGOS, ">>$out_image" ) or die;
                     print OLIGOS "$j\t$selfie_scoreR\t$primer_start_R\t$j\n";
@@ -1536,9 +1233,9 @@ sub calculate_SNP {
                     && $selfie_score < $selfie_cuttof_SNP
                     && calcRepeat( $_, $repetition ) == 1
                     && $hairpin > "-9"
-                    && $_ =~ m/gc$/i
-                    && $clamp_SNP eq "Y"
-                    && $spec_SNP eq "N" )
+                    && checkClamp_($_, $clamp_SNP) == 1 
+                    && checkSpecific_($number_matches, $spec_SNP) == 1 
+                    )
                 {
                     print FUSIONFILE_SNP
 "$id_SNP\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
@@ -1546,145 +1243,6 @@ sub calculate_SNP {
                     push @array_name_SNP,   $id_uniq_SNP;
                     push @SNP_primers,      "$id_SNP:$_";
                     open( OLIGOS_SNP, ">>$out_image_SNP" )
-                      or die;
-                    print OLIGOS_SNP "$snp\t$selfie_score\t$i\t$primer_end\n";
-                    close(OLIGOS_SNP);
-                    open( OUTS_SNP, ">>$out_single_SNP" )
-                      or die;
-                    print OUTS_SNP "$i\t$foo_SNP \t$i\t$primer_end\n";
-                    close(OUTS_SNP);
-
-                }
-                elsif (open( FUSIONFILE_SNP, ">>$outputfile_SNP " )
-                    && $Tmrounded ge $lower_tm_SNP
-                    && $Tmrounded le $upper_tm_SNP
-                    && $percentGC ge $lower_gc_SNP
-                    && $percentGC le $higher_gc_SNP
-                    && $selfie_score < $selfie_cuttof_SNP
-                    && calcRepeat( $_, $repetition ) == 1
-                    && $hairpin > "-9"
-                    && $_ =~ m/cg$/i
-                    && $clamp_SNP eq "Y"
-                    && $spec_SNP eq "N" )
-                {
-                    print FUSIONFILE_SNP
-"$id_SNP\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
-                    push @array_length_SNP, $len_uniq_SNP;
-                    push @array_name_SNP,   $id_uniq_SNP;
-                    push @SNP_primers,      "$id_SNP:$_";
-                    open( OLIGOS_SNP, ">>$out_image" )
-                      or die;
-                    print OLIGOS_SNP "$snp\t$selfie_score\t$i\t$primer_end\n";
-                    close(OLIGOS_SNP);
-                    open( OUTS_SNP, ">>$out_single_SNP" )
-                      or die;
-                    print OUTS_SNP "$i\t$foo_SNP \t$i\t$primer_end\n";
-                    close(OUTS_SNP);
-
-                }
-                elsif (open( FUSIONFILE_SNP, ">>$outputfile_SNP " )
-                    && $Tmrounded ge $lower_tm_SNP
-                    && $Tmrounded le $upper_tm_SNP
-                    && $percentGC ge $lower_gc_SNP
-                    && $percentGC le $higher_gc_SNP
-                    && $selfie_score < $selfie_cuttof_SNP
-                    && calcRepeat( $_, $repetition ) == 1
-                    && $hairpin > "-9"
-                    && $clamp_SNP eq "N"
-                    && $spec_SNP eq "N" )
-                {
-                    print FUSIONFILE_SNP
-"$id_SNP\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
-                    push @array_length_SNP, $len_uniq_SNP;
-                    push @array_name_SNP,   $id_uniq_SNP;
-                    push @SNP_primers,      "$id_SNP:$_";
-                    open( OLIGOS_SNP, ">>$out_image_SNP" )
-                      or die;
-                    print OLIGOS_SNP "$snp\t$selfie_score\t$i\t$primer_end\n";
-                    close(OLIGOS_SNP);
-                    open( OUTS_SNP, ">>$out_single_SNP" )
-                      or die;
-                    print OUTS_SNP "$i\t$foo_SNP \t$i\t$primer_end\n";
-                    close(OUTS_SNP);
-
-                }
-
-                #define dinucleotide repeats and repetitive sequence
-                #and print results if statements are matched
-                if (   open( FUSIONFILE_SNP, ">>$outputfile_SNP " )
-                    && $Tmrounded ge $lower_tm_SNP
-                    && $Tmrounded le $upper_tm_SNP
-                    && $percentGC ge $lower_gc_SNP
-                    && $percentGC le $higher_gc_SNP
-                    && $selfie_score < $selfie_cuttof_SNP
-                    && calcRepeat( $_, $repetition ) == 1
-                    && $hairpin > "-9"
-                    && $_ =~ m/gc$/i
-                    && $clamp_SNP eq "Y"
-                    && $number_matches < 2
-                    && $spec_SNP eq "Y" )
-                {
-                    print FUSIONFILE_SNP
-"$id_SNP\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
-                    push @array_length_SNP, $len_uniq_SNP;
-                    push @array_name_SNP,   $id_uniq_SNP;
-                    push @SNP_primers,      "$id_SNP:$_";
-                    open( OLIGOS_SNP, ">>$out_image_SNP" )
-                      or die;
-                    print OLIGOS_SNP "$snp\t$selfie_score\t$i\t$primer_end\n";
-                    close(OLIGOS_SNP);
-                    open( OUTS_SNP, ">>$out_single_SNP" )
-                      or die;
-                    print OUTS_SNP "$i\t$foo_SNP \t$i\t$primer_end\n";
-                    close(OUTS_SNP);
-
-                }
-                elsif (open( FUSIONFILE_SNP, ">>$outputfile_SNP " )
-                    && $Tmrounded ge $lower_tm_SNP
-                    && $Tmrounded le $upper_tm_SNP
-                    && $percentGC ge $lower_gc_SNP
-                    && $percentGC le $higher_gc_SNP
-                    && $selfie_score < $selfie_cuttof_SNP
-                    && calcRepeat( $_, $repetition ) == 1
-                    && $hairpin > "-9"
-                    && $_ =~ m/cg$/i
-                    && $clamp_SNP eq "Y"
-                    && $number_matches < 2
-                    && $spec_SNP eq "Y" )
-                {
-                    print FUSIONFILE_SNP
-"$id_SNP\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
-                    push @array_length_SNP, $len_uniq_SNP;
-                    push @array_name_SNP,   $id_uniq_SNP;
-                    push @SNP_primers,      "$id_SNP:$_";
-                    open( OLIGOS_SNP, ">>$out_image_SNP" )
-                      or die;
-                    print OLIGOS_SNP "$snp\t$selfie_score\t$i\t$primer_end\n";
-                    close(OLIGOS_SNP);
-                    open( OUTS_SNP, ">>$out_single_SNP" )
-                      or die;
-                    print OUTS_SNP "$i\t$foo_SNP \t$i\t$primer_end\n";
-                    close(OUTS_SNP);
-
-                }
-                elsif (open( FUSIONFILE_SNP, ">>$outputfile_SNP " )
-                    && $Tmrounded ge $lower_tm_SNP
-                    && $Tmrounded le $upper_tm_SNP
-                    && $percentGC ge $lower_gc_SNP
-                    && $percentGC le $higher_gc_SNP
-                    && $selfie_score < $selfie_cuttof_SNP
-                    && calcRepeat( $_, $repetition ) == 1
-                    && $hairpin > "-9"
-                    && $clamp_SNP eq "N"
-                    && $number_matches < 2
-                    && $spec_SNP eq "Y" )
-                {
-                    print FUSIONFILE_SNP
-"$id_SNP\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
-                    push @array_length_SNP, $len_uniq_SNP;
-                    push @array_name_SNP,   $id_uniq_SNP;
-                    push @SNP_primers,      "$id_SNP:$_";
-                    open( OLIGOS_SNP, ">>$out_image_SNP " )
                       or die;
                     print OLIGOS_SNP "$snp\t$selfie_score\t$i\t$primer_end\n";
                     close(OLIGOS_SNP);
@@ -1762,158 +1320,8 @@ sub calculate_SNP {
                     && $selfie_scoreR < $selfie_cuttof_SNP
                     && calcRepeat( $revR, $repetition ) == 1
                     && $hairpin_r > "-9"
-                    && $clamp_SNP eq "N"
-                    && $spec_SNP eq "N" )
-                {
-                    open( OLIGOS_SNP, ">>$out_image_SNP" )
-                      or die;
-                    print OLIGOS_SNP
-                      "$snp\t$selfie_scoreR\t$primer_start_R\t$j\n";
-                    close(OLIGOS_SNP);
-                    push @array_length_SNP, $len_uniq_SNP;
-                    push @array_name_SNP,   $id_uniq_SNP;
-                    push @SNP_primers,      "$id_SNP:$revR";
-                    open( OUTS_SNP, ">>$out_single_SNP" )
-                      or die;
-                    print OUTS_SNP "$j\t$foo_SNP \t$primer_start_R\t$j\n";
-                    close(OUTS_SNP);
-
-                    print FUSIONFILE_SNP
-"$id_SNP\t$j\t$Tm_rounded\tR:$revR\t$selfie_scoreR\t$percentGC_rounded\n";
-
-                }
-                elsif (open( FUSIONFILE_SNP, ">>$outputfile_SNP " )
-                    && $Tm_rounded ge $lower_tm_SNP
-                    && $Tm_rounded le $upper_tm_SNP
-                    && $percent_GC ge $lower_gc_SNP
-                    && $percent_GC le $higher_gc_SNP
-                    && $selfie_scoreR < $selfie_cuttof_SNP
-                    && calcRepeat( $revR, $repetition ) == 1
-                    && $hairpin_r > "-9"
-                    && $_ =~ m/^gc/i
-                    && $clamp_SNP eq "Y"
-                    && $spec_SNP eq "N" )
-                {
-                    open( OLIGOS_SNP, ">>$out_image_SNP" )
-                      or die;
-                    print OLIGOS_SNP
-                      "$snp\t$selfie_scoreR\t$primer_start_R\t$j\n";
-                    close(OLIGOS_SNP);
-                    push @array_length_SNP, $len_uniq_SNP;
-                    push @array_name_SNP,   $id_uniq_SNP;
-                    push @SNP_primers,      "$id_SNP:$revR";
-                    open( OUTS_SNP, ">>$out_single_SNP" )
-                      or die;
-                    print OUTS_SNP "$j\t$foo_SNP \t$primer_start_R\t$j\n";
-                    close(OUTS_SNP);
-
-                    print FUSIONFILE_SNP
-"$id_SNP\t$j\t$Tm_rounded\tR:$revR\t$selfie_scoreR\t$percentGC_rounded\n";
-
-                }
-                elsif (open( FUSIONFILE_SNP, ">>$outputfile_SNP" )
-                    && $Tm_rounded ge $lower_tm_SNP
-                    && $Tm_rounded le $upper_tm_SNP
-                    && $percent_GC ge $lower_gc_SNP
-                    && $percent_GC le $higher_gc_SNP
-                    && $selfie_scoreR < $selfie_cuttof_SNP
-                    && calcRepeat( $revR, $repetition ) == 1
-                    && $hairpin_r > "-9"
-                    && $_ =~ m/^cg/i
-                    && $clamp_SNP eq "Y"
-                    && $spec_SNP eq "N" )
-                {
-                    open( OLIGOS_SNP, ">>$out_image_SNP" )
-                      or die;
-                    print OLIGOS_SNP
-                      "$snp\t$selfie_scoreR\t$primer_start_R\t$j\n";
-                    close(OLIGOS_SNP);
-                    push @array_length_SNP, $len_uniq_SNP;
-                    push @array_name_SNP,   $id_uniq_SNP;
-                    push @SNP_primers,      "$id_SNP:$revR";
-                    open( OUTS_SNP, ">>$out_single_SNP" )
-                      or die;
-                    print OUTS_SNP "$j\t$foo_SNP \t$primer_start_R\t$j\n";
-                    close(OUTS_SNP);
-
-                    print FUSIONFILE_SNP
-"$id_SNP\t$j\t$Tm_rounded\tR:$revR\t$selfie_scoreR\t$percentGC_rounded\n";
-
-                }
-
-                #define dinucleotide repeats and repetitive sequence
-                #and print results if statements are matched
-                elsif (open( FUSIONFILE_SNP, ">>$outputfile_SNP " )
-                    && $Tm_rounded ge $lower_tm_SNP
-                    && $Tm_rounded le $upper_tm_SNP
-                    && $percent_GC ge $lower_gc_SNP
-                    && $percent_GC le $higher_gc_SNP
-                    && $selfie_scoreR < $selfie_cuttof_SNP
-                    && calcRepeat( $revR, $repetition ) == 1
-                    && $hairpin_r > "-9"
-                    && $clamp_SNP eq "N"
-                    && $number_matches_R < 2
-                    && $spec_SNP eq "Y" )
-                {
-                    open( OLIGOS_SNP, ">>$out_image_SNP" )
-                      or die;
-                    print OLIGOS_SNP
-                      "$snp\t$selfie_scoreR\t$primer_start_R\t$j\n";
-                    close(OLIGOS_SNP);
-                    push @array_length_SNP, $len_uniq_SNP;
-                    push @array_name_SNP,   $id_uniq_SNP;
-                    push @SNP_primers,      "$id_SNP:$revR";
-                    open( OUTS_SNP, ">>$out_single_SNP" )
-                      or die;
-                    print OUTS_SNP "$j\t$foo_SNP \t$primer_start_R\t$j\n";
-                    close(OUTS_SNP);
-
-                    print FUSIONFILE_SNP
-"$id_SNP\t$j\t$Tm_rounded\tR:$revR\t$selfie_scoreR\t$percentGC_rounded\n";
-
-                }
-                elsif (open( FUSIONFILE_SNP, ">>$outputfile_SNP" )
-                    && $Tm_rounded ge $lower_tm_SNP
-                    && $Tm_rounded le $upper_tm_SNP
-                    && $percent_GC ge $lower_gc_SNP
-                    && $percent_GC le $higher_gc_SNP
-                    && $selfie_scoreR < $selfie_cuttof_SNP
-                    && calcRepeat( $revR, $repetition ) == 1
-                    && $hairpin_r > "-9"
-                    && $_ =~ m/^gc/i
-                    && $clamp_SNP eq "Y"
-                    && $number_matches_R < 2
-                    && $spec_SNP eq "Y" )
-                {
-                    open( OLIGOS_SNP, ">>$out_image_SNP" )
-                      or die;
-                    print OLIGOS_SNP
-                      "$snp\t$selfie_scoreR\t$primer_start_R\t$j\n";
-                    close(OLIGOS_SNP);
-                    push @array_length_SNP, $len_uniq_SNP;
-                    push @array_name_SNP,   $id_uniq_SNP;
-                    push @SNP_primers,      "$id_SNP:$revR";
-                    open( OUTS_SNP, ">>$out_single_SNP" )
-                      or die;
-                    print OUTS_SNP "$j\t$foo_SNP \t$primer_start_R\t$j\n";
-                    close(OUTS_SNP);
-
-                    print FUSIONFILE_SNP
-"$id_SNP\t$j\t$Tm_rounded\tR:$revR\t$selfie_scoreR\t$percentGC_rounded\n";
-
-                }
-                elsif (open( FUSIONFILE_SNP, ">>$outputfile_SNP " )
-                    && $Tm_rounded ge $lower_tm_SNP
-                    && $Tm_rounded le $upper_tm_SNP
-                    && $percent_GC ge $lower_gc_SNP
-                    && $percent_GC le $higher_gc_SNP
-                    && $selfie_scoreR < $selfie_cuttof_SNP
-                    && calcRepeat( $revR, $repetition ) == 1
-                    && $hairpin_r > "-9"
-                    && $_ =~ m/^cg/i
-                    && $clamp_SNP eq "Y"
-                    && $number_matches_R < 2
-                    && $spec_SNP eq "Y" )
+                    && checkClamp_($revR, $clamp_SNP) == 1 
+                    && checkSpecific_($number_matches_R, $spec_SNP) == 1 )
                 {
                     open( OLIGOS_SNP, ">>$out_image_SNP" )
                       or die;
@@ -2189,6 +1597,51 @@ Tkx::MainLoop();
 ####################################
 ####################################
 ####################################
+####################################
+=head1 checkClamp_
+ Title   :  checkClamp_
+ Usage   :  -command => sub { primer_dimer($oligo, $clamp); }
+ Function:  checks to see if gc clamp paramter is met
+ Returns :  1 (true) or 0 (false)
+=cut
+
+sub checkClamp_ {
+    my $checkPrimer = shift;
+    my $clampChoice = shift;
+
+        if ($clampChoice eq "N"){
+            return 1;
+        }
+        elsif ($clampChoice eq "Y" && $checkPrimer =~ m/cg$/i or $checkPrimer =~ m/gc$/i or $checkPrimer =~ m/gg$/i or $checkPrimer =~ m/cc$/i){
+            return 1;
+        }
+        else {
+            return 0;
+        }  
+}
+####################################
+####################################
+=head1 checkSpecific_
+ Title   :  checkSpecific_
+ Usage   :  -command => sub { primer_dimer($number_matches, $spec); }
+ Function:  checks to see if sequence specificty paramter is met
+ Returns :  1 (true) or 0 (false)
+=cut
+
+sub checkSpecific_ {
+    my $specificNumber = shift;
+    my $specificChoice = shift;
+
+        if ($specificChoice eq "N"){
+            return 1;
+        }
+        elsif ($specificChoice eq "Y" && $specificNumber == 1){
+            return 1;
+        }
+        else {
+            return 0;
+        }  
+}
 ####################################
 =head1 primer_dimer
  Title   :  primer_dimer
