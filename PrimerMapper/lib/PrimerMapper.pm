@@ -1,6 +1,13 @@
 #
 # Main module for PrimerMapper
 #
+#       uses the software primer3
+#       https://sourceforge.net/projects/primer3/
+#       by Steve Rozen et al.
+#       and the Bio::Graphics modules within Bioperl
+#       by Lincoln Stein
+#       and by Ewan Birney
+#
 # Please direct questions and support issues to <https://github.com/dohalloran/PrimerMapper/issues>
 #
 # Author: Damien O'Halloran, The George Washington University, 2015
@@ -23,44 +30,30 @@ PrimerMapper - runs the primer design side of things
   my $tmp = PrimerMapper->new();
   
 Primer Design Defaults
-    my $five_prime_end  = "150";
-    my $three_prime_end = "150";
+    my $min_prod_size  = "150";
+    my $max_prod_size = "150";
     my $kmer_max        = "25";
     my $kmer_min        = "18";
-    my $clamp           = "N";
+    my $clamp           = "0";
     my $higher_gc       = "60";
     my $lower_gc        = "40";
     my $upper_tm        = "68";
     my $lower_tm        = "55";
-    my $spec            = "N";
-    my $mis             = "2";
     my $salt            = "50";
-    my $DNA_conc        = "100";
-    my $selfie_cuttof   = "9";
     my $outputfile      = "primers.tsv";
-    my $min_size_seq    = "300";
     my $format          = ".png";
-    my $repetition      = "N";
 SNP Primer Design Defaults
     my $five_prime_SNP    = "120";
     my $three_prime_SNP   = "120";
     my $kmer_max_SNP      = "25";
     my $kmer_min_SNP      = "18";
-    my $clamp_SNP         = "N";
+    my $clamp_SNP         = "0";
     my $higher_gc_SNP     = "60";
     my $lower_gc_SNP      = "40";
     my $upper_tm_SNP      = "68";
     my $lower_tm_SNP      = "55";
-    my $spec_SNP          = "N";
-    my $mis_SNP           = "2";
     my $salt_SNP          = "50";
-    my $DNA_conc_SNP      = "100";
-    my $selfie_cuttof_SNP = "9";
-    my $outputfile_SNP    = "SNP_primers.tsv";
     my $snp_distance      = "30";
-Other Defaults
-    my $min_size_seq    = "300";
-    my $format          = ".png";
 
 the defaults will be overwritten if a parameter is changed
 
@@ -68,13 +61,10 @@ the defaults will be overwritten if a parameter is changed
 This object produces the following:
 
 1. a GUI to facilitate primer design and visualization
-2. Provides browser visualization of primer maps and permits the user to draw new primers
-3. Traditional primer design as well as SNP and allele specific primer design
-4. Visualization of primer distribution across each sequence and entire input file
-5. Returns primers specific to the entire input file using specificty and mis-match options 
-6. Remote sequence access from GenBank and dbSNP
-7. Primer BLAST facility against multiple NCBI databases 
-8. Generates primer dimer scores for all primers generated to facilitate multiplex PCR expts
+2. Traditional primer design as well as SNP and allele specific primer design
+3. Visualization of primer distribution across each sequence and entire input file
+4. Remote sequence access from GenBank and dbSNP
+5. Primer BLAST facility against multiple NCBI databases 
 
 =head4 REFERENCES
 The design of the code and it's execution relies heaviliy upon the BioPerl toolkit:
@@ -94,7 +84,6 @@ web:
 The rest of the documentation details each of the subs and code
 
 =cut
-
 
 package PrimerMapper;
 
@@ -123,7 +112,7 @@ use PrimerMapperGraphics;
 #########################
 #########################
 
-our $VERSION = '2.0';
+our $VERSION = '3.0';
 
 #########################
 #########################
@@ -135,37 +124,28 @@ sub new {
 
 ####Global Primer Design Defaults
 my $fasta;
-my $five_prime_end  = "150";
-my $three_prime_end = "150";
-my $kmer_max        = "25";
-my $kmer_min        = "18";
-my $clamp           = "N";
-my $higher_gc       = "60";
-my $lower_gc        = "40";
-my $upper_tm        = "68";
-my $lower_tm        = "55";
-my $spec            = "N";
-my $mis             = "2";
-my $salt            = "50";
-my $DNA_conc        = "100";
-my $selfie_cuttof   = "9";
-my $outputfile      = "primers.tsv";
-my $min_size_seq    = "300";
-my $format          = ".png";
-my $repetition      = "N";
+my $min_prod_size = "100";
+my $max_prod_size = "1000";
+my $kmer_max      = "25";
+my $kmer_min      = "18";
+my $clamp         = "0";
+my $higher_gc     = "60";
+my $lower_gc      = "40";
+my $upper_tm      = "68";
+my $lower_tm      = "55";
+my $salt          = "50";
+my $format        = ".png";
+my $outputfile    = "primers.tsv";
 ###########################
 
-####Global Strings, Arrays, and Hashes
+####Global Strings, Arrays, and Hashesou
 my $outfile;
-my $outputfile_html;
 my $out_single = "single_viewer.txt";
-my $specificty;
-my $seq_in = "NM_001307521.1,GI: 228485043";
+my $seq_in     = "NM_001307521.1,FJ455617.1";
 my @array_length;
 my @array_name;
 my @gene_length;
 my @increment;
-my @primers;
 my $foo;
 my $Tm2;
 my $Tm;
@@ -179,22 +159,18 @@ my $blaster;
 ####Global SNP Primer Design Defaults
 my $fasta_SNP;
 my $fasta_SNP_NEW;
-my $five_prime_SNP    = "120";
-my $three_prime_SNP   = "120";
-my $kmer_max_SNP      = "25";
-my $kmer_min_SNP      = "18";
-my $clamp_SNP         = "N";
-my $higher_gc_SNP     = "60";
-my $lower_gc_SNP      = "40";
-my $upper_tm_SNP      = "68";
-my $lower_tm_SNP      = "55";
-my $spec_SNP          = "N";
-my $mis_SNP           = "2";
-my $salt_SNP          = "50";
-my $DNA_conc_SNP      = "100";
-my $selfie_cuttof_SNP = "9";
-my $outputfile_SNP    = "SNP_primers.tsv";
-my $snp_distance      = "30";
+my $five_prime_SNP  = "180";
+my $three_prime_SNP = "180";
+my $kmer_max_SNP    = "25";
+my $kmer_min_SNP    = "18";
+my $clamp_SNP       = "0";
+my $higher_gc_SNP   = "60";
+my $lower_gc_SNP    = "40";
+my $upper_tm_SNP    = "68";
+my $lower_tm_SNP    = "55";
+my $salt_SNP        = "50";
+my $outputfile_SNP  = "SNP_primers.tsv";
+my $snp_distance    = "30";
 ###########################
 
 ####Global SNP Strings and Hashes
@@ -203,14 +179,12 @@ my $kmer_SNP;
 my $snp;
 my $outfile_SNP;
 my $out_single_SNP = "single_viewer_SNP.txt";
-my $specificty_SNP;
-my $seq_in_SNP = "rs744373,rs11136000,rs3764650";
+my $seq_in_SNP     = "rs744373,rs11136000,rs3764650";
 my @array_length_SNP;
 my @array_name_SNP;
 my @gene_length_SNP;
 my @increment_SNP;
 my @SNP_position;
-my @SNP_primers;
 my $foo_SNP;
 my $Tm2_SNP;
 my $Tm_SNP;
@@ -228,6 +202,7 @@ my $degen;
 ####################################
 ####Interface Begins####
 ####################################
+
 =head1 Load the Tkx interface
  Title   :  Tkx::MainLoop();
  Usage   :  my $main_window = Tkx::widget->new(".");
@@ -250,11 +225,14 @@ $input_frame->g_grid(
     -sticky     => "nwes"
 );
 
-my $input_ = $input_frame->new_ttk__entry( -width => 40, -textvariable => \$fasta );
+my $input_ =
+  $input_frame->new_ttk__entry( -width => 40, -textvariable => \$fasta );
 $input_->g_grid( -column => 1, -row => 0, -sticky => "we" );
-my $load_file_ = $input_frame->new_ttk__button( -text => "Load File", -command => \&loadfile );
+my $load_file_ =
+  $input_frame->new_ttk__button( -text => "Load File", -command => \&loadfile );
 $load_file_->g_grid( -column => 0, -row => 0, -sticky => "w" );
-my $load_seq_ = $input_frame->new_ttk__entry( -width => 40, -textvariable => \$seq_in );
+my $load_seq_ =
+  $input_frame->new_ttk__entry( -width => 40, -textvariable => \$seq_in );
 $load_seq_->g_grid( -column => 4, -row => 0, -sticky => "w" );
 my $get_seqs_ = $input_frame->new_ttk__button(
     -text    => "Get Sequences",
@@ -274,12 +252,20 @@ $outer_frame_snp->g_grid(
     -pady       => 10
 );
 
-my $input_snp_ = $outer_frame_snp->new_ttk__entry( -width => 40, -textvariable => \$fasta_SNP );
+my $input_snp_ = $outer_frame_snp->new_ttk__entry(
+    -width        => 40,
+    -textvariable => \$fasta_SNP
+);
 $input_snp_->g_grid( -column => 1, -row => 14, -sticky => "w" );
-my $load_snp_ =
-  $outer_frame_snp->new_ttk__button( -text => "Load SNP File", -command => \&loadfile_SNP );
+my $load_snp_ = $outer_frame_snp->new_ttk__button(
+    -text    => "Load SNP File",
+    -command => \&loadfile_SNP
+);
 $load_snp_->g_grid( -column => 0, -row => 14, -sticky => "w" );
-my $load_seq_snp_ = $outer_frame_snp->new_ttk__entry( -width => 40, -textvariable => \$seq_in_SNP );
+my $load_seq_snp_ = $outer_frame_snp->new_ttk__entry(
+    -width        => 40,
+    -textvariable => \$seq_in_SNP
+);
 $load_seq_snp_->g_grid( -column => 4, -row => 14, -sticky => "w" );
 my $get_snp_seqs_ = $outer_frame_snp->new_ttk__button(
     -text    => "Get SNP Sequences",
@@ -287,7 +273,8 @@ my $get_snp_seqs_ = $outer_frame_snp->new_ttk__button(
 );
 $get_snp_seqs_->g_grid( -column => 2, -row => 14, -sticky => "w" );
 
-my $design_frame_ = $outer_frame->new_ttk__labelframe( -text => "PRIMER DESIGN" );
+my $design_frame_ =
+  $outer_frame->new_ttk__labelframe( -text => "PRIMER DESIGN" );
 $design_frame_->new_ttk__frame( -padding => "3 3 12 12" );
 $design_frame_->g_grid(
     -column     => 0,
@@ -309,68 +296,74 @@ my $three_prime_snp_ = $design_frame_->new_ttk__entry(
 );
 $three_prime_snp_->g_grid( -column => 5, -row => 2, -sticky => "we" );
 
-my $kmer_max_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$kmer_max_SNP );
+my $kmer_max_snp_ = $design_frame_->new_ttk__entry(
+    -width        => 3,
+    -textvariable => \$kmer_max_SNP
+);
 $kmer_max_snp_->g_grid( -column => 2, -row => 3, -sticky => "we" );
 
-my $kmer_min_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$kmer_min_SNP );
+my $kmer_min_snp_ = $design_frame_->new_ttk__entry(
+    -width        => 3,
+    -textvariable => \$kmer_min_SNP
+);
 $kmer_min_snp_->g_grid( -column => 5, -row => 3, -sticky => "we" );
 
-my $upper_gc_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$higher_gc_SNP );
+my $upper_gc_snp_ = $design_frame_->new_ttk__entry(
+    -width        => 3,
+    -textvariable => \$higher_gc_SNP
+);
 $upper_gc_snp_->g_grid( -column => 2, -row => 4, -sticky => "we" );
 
-my $lower_gc_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$lower_gc_SNP );
+my $lower_gc_snp_ = $design_frame_->new_ttk__entry(
+    -width        => 3,
+    -textvariable => \$lower_gc_SNP
+);
 $lower_gc_snp_->g_grid( -column => 5, -row => 4, -sticky => "we" );
 
-my $upper_tm_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$upper_tm_SNP );
+my $upper_tm_snp_ = $design_frame_->new_ttk__entry(
+    -width        => 3,
+    -textvariable => \$upper_tm_SNP
+);
 $upper_tm_snp_->g_grid( -column => 2, -row => 5, -sticky => "we" );
 
-my $lower_tm_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$lower_tm_SNP );
+my $lower_tm_snp_ = $design_frame_->new_ttk__entry(
+    -width        => 3,
+    -textvariable => \$lower_tm_SNP
+);
 $lower_tm_snp_->g_grid( -column => 5, -row => 5, -sticky => "we" );
 
-my $gc_clamp_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$clamp_SNP );
-$gc_clamp_snp_->g_grid( -column => 2, -row => 6, -sticky => "e" );
+my $gc_clamp_snp_ =
+  $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$clamp_SNP );
+$gc_clamp_snp_->g_grid( -column => 7, -row => 5, -sticky => "e" );
 
-my $salt_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$salt_SNP );
-$salt_snp_->g_grid( -column => 2, -row => 7, -sticky => "we" );
+my $salt_snp_ =
+  $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$salt_SNP );
+$salt_snp_->g_grid( -column => 7, -row => 2, -sticky => "we" );
 
-my $specific_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$spec_SNP );
-$specific_snp_->g_grid( -column => 5, -row => 6, -sticky => "w" );
+my $format_snp_ =
+  $design_frame_->new_ttk__entry( -width => 10, -textvariable => \$format );
+$format_snp_->g_grid( -column => 7, -row => 3, -sticky => "we" );
 
-my $mis_match_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$mis_SNP );
-$mis_match_snp_->g_grid( -column => 5, -row => 7, -sticky => "w" );
+my $snp_distance_ = $design_frame_->new_ttk__entry(
+    -width        => 10,
+    -textvariable => \$snp_distance
+);
+$snp_distance_->g_grid( -column => 7, -row => 4, -sticky => "we" );
 
-my $dna_concentration_snp_ = $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$DNA_conc_SNP );
-$dna_concentration_snp_->g_grid( -column => 7, -row => 2, -sticky => "we" );
-
-my $outfile_snp_ =
-  $design_frame_->new_ttk__entry( -width => 10, -textvariable => \$outputfile_SNP );
-$outfile_snp_->g_grid( -column => 7, -row => 3, -sticky => "we" );
-
-my $self_comp_snp_ =
-  $design_frame_->new_ttk__entry( -width => 10, -textvariable => \$selfie_cuttof_SNP );
-$self_comp_snp_->g_grid( -column => 7, -row => 4, -sticky => "we" );
-
-my $format_snp_ = $design_frame_->new_ttk__entry( -width => 10, -textvariable => \$format );
-$format_snp_->g_grid( -column => 7, -row => 6, -sticky => "we" );
-
-my $snp_distance_ =
-  $design_frame_->new_ttk__entry( -width => 10, -textvariable => \$snp_distance );
-$snp_distance_->g_grid( -column => 7, -row => 5, -sticky => "we" );
-
-my $min_size_snp_ =
-  $design_frame_->new_ttk__entry( -width => 10, -textvariable => \$min_size_seq );
-$min_size_snp_->g_grid( -column => 7, -row => 7, -sticky => "we" );
-
-my $distance_from_snp_ = $design_frame_->new_ttk__label( -text => "5' up from SNP" );
+my $distance_from_snp_ =
+  $design_frame_->new_ttk__label( -text => "5' up from SNP" );
 $distance_from_snp_->g_grid( -column => 1, -row => 2, -sticky => "w" );
 
-my $distance_down_from_snp_ = $design_frame_->new_ttk__label( -text => "3' down from SNP" );
+my $distance_down_from_snp_ =
+  $design_frame_->new_ttk__label( -text => "3' down from SNP" );
 $distance_down_from_snp_->g_grid( -column => 4, -row => 2, -sticky => "w" );
 
-my $max_primer_len_snp_ = $design_frame_->new_ttk__label( -text => "Primer length max" );
+my $max_primer_len_snp_ =
+  $design_frame_->new_ttk__label( -text => "Primer length max" );
 $max_primer_len_snp_->g_grid( -column => 1, -row => 3, -sticky => "w" );
 
-my $min_primer_len_snp_ = $design_frame_->new_ttk__label( -text => "Primer length min" );
+my $min_primer_len_snp_ =
+  $design_frame_->new_ttk__label( -text => "Primer length min" );
 $min_primer_len_snp_->g_grid( -column => 4, -row => 3, -sticky => "w" );
 
 my $max_gc_snp_ = $design_frame_->new_ttk__label( -text => "Upper GC%" );
@@ -385,48 +378,35 @@ $max_tm_snp_->g_grid( -column => 1, -row => 5, -sticky => "w" );
 my $min_tm_snp_ = $design_frame_->new_ttk__label( -text => "Lower Tm" );
 $min_tm_snp_->g_grid( -column => 4, -row => 5, -sticky => "w" );
 
-my $clamp_snp_ = $design_frame_->new_ttk__label( -text => "GC clamp (Y/N)" );
-$clamp_snp_->g_grid( -column => 1, -row => 6, -sticky => "w" );
+my $clamp_snp_ = $design_frame_->new_ttk__label( -text => "GC clamp (1/0)" );
+$clamp_snp_->g_grid( -column => 6, -row => 5, -sticky => "w" );
 
-my $sequence_specific_snp_ = $design_frame_->new_ttk__label( -text => "input specificity (Y/N)" );
-$sequence_specific_snp_->g_grid( -column => 4, -row => 6, -sticky => "w" );
+my $nacl_concentration_snp_ =
+  $design_frame_->new_ttk__label( -text => "salt concentration (mM)" );
+$nacl_concentration_snp_->g_grid( -column => 6, -row => 2, -sticky => "w" );
 
-my $sequence_mismatch_snp_ = $design_frame_->new_ttk__label( -text => "mis-matches" );
-$sequence_mismatch_snp_->g_grid( -column => 4, -row => 7, -sticky => "w" );
+my $min_basepairs_from_snp_ =
+  $design_frame_->new_ttk__label( -text => "Min. distance from SNP" );
+$min_basepairs_from_snp_->g_grid( -column => 6, -row => 4, -sticky => "w" );
 
-my $nacl_concentration_snp_ = $design_frame_->new_ttk__label( -text => "salt concentration (mM)" );
-$nacl_concentration_snp_->g_grid( -column => 1, -row => 7, -sticky => "w" );
-
-my $dna_snp_ = $design_frame_->new_ttk__label( -text => "DNA concentration (nM)" );
-$dna_snp_->g_grid( -column => 6, -row => 2, -sticky => "w" );
-
-my $snp_outfile_ = $design_frame_->new_ttk__label( -text => "SNP Primer file" );
-$snp_outfile_->g_grid( -column => 6, -row => 3, -sticky => "w" );
-
-my $self_snp_ = $design_frame_->new_ttk__label( -text => "Self-complementarity" );
-$self_snp_->g_grid( -column => 6, -row => 4, -sticky => "w" );
-
-my $min_basepairs_from_snp_ = $design_frame_->new_ttk__label( -text => "Minimum distance from SNP" );
-$min_basepairs_from_snp_->g_grid( -column => 6, -row => 5, -sticky => "w" );
-
-my $outfile_format_snp_ = $design_frame_->new_ttk__label( -text => "Graphic format (.png or .gif)" );
-$outfile_format_snp_->g_grid( -column => 6, -row => 6, -sticky => "w" );
-
-my $min_input_size_snp_ = $design_frame_->new_ttk__label( -text => "Minimum size sequence" );
-$min_input_size_snp_->g_grid( -column => 6, -row => 7, -sticky => "w" );
+my $outfile_format_snp_ =
+  $design_frame_->new_ttk__label( -text => "png or gif" );
+$outfile_format_snp_->g_grid( -column => 6, -row => 3, -sticky => "w" );
 
 foreach ( Tkx::SplitList( $design_frame_->g_winfo_children ) ) {
     Tkx::grid_configure( $_, -padx => 5, -pady => 5 );
 }
 
-my $run_snp_frame_ =
-  $outer_frame->new_ttk__labelframe( -text => "RUN", -width => 10, -height => 60 );
+my $run_snp_frame_ = $outer_frame->new_ttk__labelframe(
+    -text   => "RUN",
+    -width  => 10,
+    -height => 60
+);
 $run_snp_frame_->new_ttk__frame( -padding => "3 3 12 12" );
 $run_snp_frame_->g_grid( -column => 0, -row => 28, -sticky => "nwes" );
 
-
 my $design_snp_frame_ = $run_snp_frame_->new_ttk__button(
-    -text    => "1: Design SNP Primers and Graphics",
+    -text    => "Design SNP Primers and Graphics",
     -command => sub {
         calculate_SNP();
         graphics_all_primers_SNP( \@array_length_SNP, \@array_name_SNP,
@@ -436,21 +416,16 @@ my $design_snp_frame_ = $run_snp_frame_->new_ttk__button(
 );
 $design_snp_frame_->g_grid( -column => 1, -row => 9, -sticky => "e" );
 
-my $multiple_snp_ = $run_snp_frame_->new_ttk__button(
-    -text    => "2: Multiplex PCR dimer scores",
-    -command => sub { primer_dimer_SNP(); }
-);
-$multiple_snp_->g_grid( -column => 4, -row => 9, -sticky => "s" );
-
 my $clean_up_snp_ = $run_snp_frame_->new_ttk__button(
-    -text    => "3: Clean-up (run last)",
+    -text    => "Clean-up",
     -command => sub { clean_up(); }
 );
 $clean_up_snp_->g_grid( -column => 5, -row => 9, -sticky => "s" );
 
 ########## SNP BTM
 
-my $out_frame_primers = $outer_frame->new_ttk__labelframe( -text => "PRIMER DESIGN" );
+my $out_frame_primers =
+  $outer_frame->new_ttk__labelframe( -text => "PRIMER DESIGN" );
 $out_frame_primers->new_ttk__frame( -padding => "3 3 12 12" );
 $out_frame_primers->g_grid(
     -column     => 0,
@@ -462,69 +437,75 @@ $out_frame_primers->g_grid(
 
 my $five_primer_ending_ = $out_frame_primers->new_ttk__entry(
     -width        => 3,
-    -textvariable => \$five_prime_end
+    -textvariable => \$min_prod_size
 );
 $five_primer_ending_->g_grid( -column => 2, -row => 2, -sticky => "we" );
 
 my $three_primer_ending_ = $out_frame_primers->new_ttk__entry(
     -width        => 3,
-    -textvariable => \$three_prime_end
+    -textvariable => \$max_prod_size
 );
 $three_primer_ending_->g_grid( -column => 5, -row => 2, -sticky => "we" );
 
-my $max_primer_size_allowed_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$kmer_max );
+my $max_primer_size_allowed_ = $out_frame_primers->new_ttk__entry(
+    -width        => 3,
+    -textvariable => \$kmer_max
+);
 $max_primer_size_allowed_->g_grid( -column => 2, -row => 3, -sticky => "we" );
 
-my $min_primer_size_allowed_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$kmer_min );
+my $min_primer_size_allowed_ = $out_frame_primers->new_ttk__entry(
+    -width        => 3,
+    -textvariable => \$kmer_min
+);
 $min_primer_size_allowed_->g_grid( -column => 5, -row => 3, -sticky => "we" );
 
-my $max_gc_content_allowed_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$higher_gc );
+my $max_gc_content_allowed_ = $out_frame_primers->new_ttk__entry(
+    -width        => 3,
+    -textvariable => \$higher_gc
+);
 $max_gc_content_allowed_->g_grid( -column => 2, -row => 4, -sticky => "we" );
 
-my $min_gc_content_allowed_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$lower_gc );
+my $min_gc_content_allowed_ = $out_frame_primers->new_ttk__entry(
+    -width        => 3,
+    -textvariable => \$lower_gc
+);
 $min_gc_content_allowed_->g_grid( -column => 5, -row => 4, -sticky => "we" );
 
-my $max_primer_tm_allowed_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$upper_tm );
+my $max_primer_tm_allowed_ = $out_frame_primers->new_ttk__entry(
+    -width        => 3,
+    -textvariable => \$upper_tm
+);
 $max_primer_tm_allowed_->g_grid( -column => 2, -row => 5, -sticky => "we" );
 
-my $min_primer_tm_allowed_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$lower_tm );
+my $min_primer_tm_allowed_ = $out_frame_primers->new_ttk__entry(
+    -width        => 3,
+    -textvariable => \$lower_tm
+);
 $min_primer_tm_allowed_->g_grid( -column => 5, -row => 5, -sticky => "we" );
 
-my $add_gc_clamp_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$clamp );
-$add_gc_clamp_->g_grid( -column => 2, -row => 6, -sticky => "e" );
+my $add_gc_clamp_ =
+  $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$clamp );
+$add_gc_clamp_->g_grid( -column => 7, -row => 2, -sticky => "e" );
 
-my $sodium_chloride_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$salt );
-$sodium_chloride_->g_grid( -column => 2, -row => 7, -sticky => "we" );
+my $sodium_chloride_ =
+  $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$salt );
+$sodium_chloride_->g_grid( -column => 7, -row => 4, -sticky => "we" );
 
-my $input_specific__ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$spec );
-$input_specific__->g_grid( -column => 5, -row => 6, -sticky => "w" );
-
-my $permit_mis_matches_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$mis );
-$permit_mis_matches_->g_grid( -column => 5, -row => 7, -sticky => "w" );
-
-my $dna_concentr_ = $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$DNA_conc );
-$dna_concentr_->g_grid( -column => 7, -row => 2, -sticky => "we" );
-
-my $outfile__ = $out_frame_primers->new_ttk__entry( -width => 10, -textvariable => \$outputfile );
+my $outfile__ = $out_frame_primers->new_ttk__entry(
+    -width        => 10,
+    -textvariable => \$outputfile
+);
 $outfile__->g_grid( -column => 7, -row => 3, -sticky => "we" );
 
-my $self_complement_score_ =
-  $out_frame_primers->new_ttk__entry( -width => 10, -textvariable => \$selfie_cuttof );
-$self_complement_score_->g_grid( -column => 7, -row => 4, -sticky => "we" );
-
-my $format__ = $out_frame_primers->new_ttk__entry( -width => 10, -textvariable => \$format );
+my $format__ =
+  $out_frame_primers->new_ttk__entry( -width => 10, -textvariable => \$format );
 $format__->g_grid( -column => 7, -row => 5, -sticky => "we" );
 
-my $minimum_sequence_size_allowed_ =
-  $out_frame_primers->new_ttk__entry( -width => 10, -textvariable => \$min_size_seq );
-$minimum_sequence_size_allowed_->g_grid( -column => 7, -row => 6, -sticky => "we" );
-
-my $repetitive_seq_allowed_ =
-  $out_frame_primers->new_ttk__entry( -width => 10, -textvariable => \$repetition );
-$repetitive_seq_allowed_->g_grid( -column => 7, -row => 7, -sticky => "we" );
-
-my $run_frame__ =
-  $outer_frame->new_ttk__labelframe( -text => "RUN", -width => 10, -height => 40 );
+my $run_frame__ = $outer_frame->new_ttk__labelframe(
+    -text   => "RUN",
+    -width  => 10,
+    -height => 40
+);
 $run_frame__->new_ttk__frame( -padding => "3 3 12 12" );
 $run_frame__->g_grid( -column => 0, -row => 8, -sticky => "nwes" );
 
@@ -533,7 +514,8 @@ my $blast_frame_ = $main_window->new_ttk__labelframe(
 $blast_frame_->new_ttk__frame( -padding => "3 3 12 12" );
 $blast_frame_->g_grid( -column => 0, -row => 10, -sticky => "nwes" );
 
-my $text = $blast_frame_->new_tk__text( -width => 80, -height => 6, -wrap => "none" );
+my $text =
+  $blast_frame_->new_tk__text( -width => 80, -height => 3, -wrap => "none" );
 $text->g_grid;
 my $thetext;
 
@@ -543,7 +525,8 @@ my $exit_ = $main_window->new_ttk__button(
 );
 $exit_->g_grid( -column => 0, -row => 14, -sticky => "s" );
 
-my $which_db_ = $main_window->new_ttk__labelframe( -text => "SELECT DATABASE:" );
+my $which_db_ =
+  $main_window->new_ttk__labelframe( -text => "SELECT DATABASE:" );
 $which_db_->g_grid( -column => 0, -row => 12, -sticky => "nwes" );
 
 my $nt_db_ = $which_db_->new_ttk__radiobutton(
@@ -591,7 +574,7 @@ my $blast_run_ = $which_db_->new_ttk__button(
 $blast_run_->g_grid( -column => 0, -row => 14, -sticky => "w" );
 
 my $get_the_primers_ = $run_frame__->new_ttk__button(
-    -text    => "1: Design Primers and Graphics (run this first)",
+    -text    => "Design Primers and Graphics",
     -command => sub {
         calculate();
         graphics_all_primers( \@array_length, \@array_name, \@gene_length,
@@ -601,71 +584,67 @@ my $get_the_primers_ = $run_frame__->new_ttk__button(
 );
 $get_the_primers_->g_grid( -column => 1, -row => 9, -sticky => "e" );
 
-my $multiplex__ = $run_frame__->new_ttk__button(
-    -text    => "2: Multiplex PCR dimer scores",
-    -command => sub { primer_dimer(); }
-);
-$multiplex__->g_grid( -column => 4, -row => 9, -sticky => "s" );
-
 my $cleaner__ = $run_frame__->new_ttk__button(
-    -text    => "3: Clean-up (run last)",
+    -text    => "Clean-up",
     -command => sub { clean_up(); }
 );
 $cleaner__->g_grid( -column => 5, -row => 9, -sticky => "s" );
 
-my $search_area_five__prime_ = $out_frame_primers->new_ttk__label( -text => "5' search area" );
+my $search_area_five__prime_ =
+  $out_frame_primers->new_ttk__label( -text => "Max. product size" );
 $search_area_five__prime_->g_grid( -column => 1, -row => 2, -sticky => "w" );
 
-my $search_area_three__prime_ = $out_frame_primers->new_ttk__label( -text => "3' search area" );
+my $search_area_three__prime_ =
+  $out_frame_primers->new_ttk__label( -text => "Min. product size" );
 $search_area_three__prime_->g_grid( -column => 4, -row => 2, -sticky => "w" );
 
-my $max_permitted_oligo_len__ = $out_frame_primers->new_ttk__label( -text => "Primer length max" );
+my $max_permitted_oligo_len__ =
+  $out_frame_primers->new_ttk__label( -text => "Primer length max" );
 $max_permitted_oligo_len__->g_grid( -column => 1, -row => 3, -sticky => "w" );
 
-my $min_permitted_oligo_len__ = $out_frame_primers->new_ttk__label( -text => "Primer length min" );
+my $min_permitted_oligo_len__ =
+  $out_frame_primers->new_ttk__label( -text => "Primer length min" );
 $min_permitted_oligo_len__->g_grid( -column => 4, -row => 3, -sticky => "w" );
 
-my $max_permitted_oligo_gc__ = $out_frame_primers->new_ttk__label( -text => "Upper GC%" );
+my $max_permitted_oligo_gc__ =
+  $out_frame_primers->new_ttk__label( -text => "Upper GC%" );
 $max_permitted_oligo_gc__->g_grid( -column => 1, -row => 4, -sticky => "w" );
 
-my $min_permitted_oligo_gc__ = $out_frame_primers->new_ttk__label( -text => "Lower GC%" );
+my $min_permitted_oligo_gc__ =
+  $out_frame_primers->new_ttk__label( -text => "Lower GC%" );
 $min_permitted_oligo_gc__->g_grid( -column => 4, -row => 4, -sticky => "w" );
 
-my $max_permitted_oligo_tm__ = $out_frame_primers->new_ttk__label( -text => "Upper Tm" );
+my $max_permitted_oligo_tm__ =
+  $out_frame_primers->new_ttk__label( -text => "Upper Tm" );
 $max_permitted_oligo_tm__->g_grid( -column => 1, -row => 5, -sticky => "w" );
 
-my $min_permitted_oligo_tm__ = $out_frame_primers->new_ttk__label( -text => "Lower Tm" );
+my $min_permitted_oligo_tm__ =
+  $out_frame_primers->new_ttk__label( -text => "Lower Tm" );
 $min_permitted_oligo_tm__->g_grid( -column => 4, -row => 5, -sticky => "w" );
 
-my $clamp_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "GC clamp (Y/N)" );
-$clamp_permitted_oligo__->g_grid( -column => 1, -row => 6, -sticky => "w" );
+my $clamp_permitted_oligo__ =
+  $out_frame_primers->new_ttk__label( -text => "GC clamp (1/0)" );
+$clamp_permitted_oligo__->g_grid( -column => 6, -row => 2, -sticky => "w" );
 
-my $specific_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "input specificity (Y/N)" );
-$specific_permitted_oligo__->g_grid( -column => 4, -row => 6, -sticky => "w" );
+my $nacl_permitted_oligo__ =
+  $out_frame_primers->new_ttk__label( -text => "salt conc. (mM)" );
+$nacl_permitted_oligo__->g_grid( -column => 6, -row => 4, -sticky => "w" );
 
-my $mismatch_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "mis-matches" );
-$mismatch_permitted_oligo__->g_grid( -column => 4, -row => 7, -sticky => "w" );
+my $regular_oligo_text_outfile__ =
+  $out_frame_primers->new_ttk__label( -text => "Primer text file" );
+$regular_oligo_text_outfile__->g_grid(
+    -column => 6,
+    -row    => 3,
+    -sticky => "w"
+);
 
-my $nacl_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "salt concentration (mM)" );
-$nacl_permitted_oligo__->g_grid( -column => 1, -row => 7, -sticky => "w" );
-
-my $dna_conc_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "DNA concentration (nM)" );
-$dna_conc_permitted_oligo__->g_grid( -column => 6, -row => 2, -sticky => "w" );
-
-my $regular_oligo_text_outfile__ = $out_frame_primers->new_ttk__label( -text => "Primer text file" );
-$regular_oligo_text_outfile__->g_grid( -column => 6, -row => 3, -sticky => "w" );
-
-my $self_comp_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "Self-complementarity" );
-$self_comp_permitted_oligo__->g_grid( -column => 6, -row => 4, -sticky => "w" );
-
-my $regular_oligo_graphic_format_outfile__ = $out_frame_primers->new_ttk__label( -text => "Graphic format (.png or .gif)" );
-$regular_oligo_graphic_format_outfile__->g_grid( -column => 6, -row => 5, -sticky => "w" );
-
-my $min_seq_size_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "Minimum size sequence" );
-$min_seq_size_permitted_oligo__->g_grid( -column => 6, -row => 6, -sticky => "w" );
-
-my $rep_seq_permitted_oligo__ = $out_frame_primers->new_ttk__label( -text => "Repetitive seq (Y/N)" );
-$rep_seq_permitted_oligo__->g_grid( -column => 6, -row => 7, -sticky => "w" );
+my $regular_oligo_graphic_format_outfile__ =
+  $out_frame_primers->new_ttk__label( -text => "png or gif" );
+$regular_oligo_graphic_format_outfile__->g_grid(
+    -column => 6,
+    -row    => 5,
+    -sticky => "w"
+);
 
 foreach ( Tkx::SplitList( $out_frame_primers->g_winfo_children ) ) {
     Tkx::grid_configure( $_, -padx => 5, -pady => 5 );
@@ -681,6 +660,7 @@ sub exit_program {
 ####################################
 
 ####Collect Seqs remotely
+
 =head1 get_sequences
  Title   :  get_sequences
  Usage   :  -command => sub { get_sequences(); }
@@ -710,13 +690,13 @@ sub get_sequences {
 }
 
 ####Collect SNP Seqs remotely
+
 =head1 get_sequences_SNP
  Title   :  get_sequences_SNP
  Usage   :  -command => sub { get_sequences_SNP(); }
  Function:  uses NIH e-utilities to retrieve remotely SNP sequences in dbSNP
  Returns :  SNP formatted sequences 
 =cut
-
 
 sub get_sequences_SNP {
     $seq_in_SNP =~ s/\s//g;
@@ -739,12 +719,12 @@ sub get_sequences_SNP {
 }
 
 ####Load Seqs into PrimerMapper
+
 =head1 loadfile
  Title   :  loadfile
  Usage   :  $fasta = Tkx::tk___getOpenFile();
  Function:  loads sequences into PrimerMapper program 
 =cut
-
 
 sub loadfile {
     $fasta = Tkx::tk___getOpenFile();
@@ -759,27 +739,17 @@ sub loadfile {
     close IN;
     close OUT;
 
-    #stringify the specificity file
-    open OUT, $outfile or die "Couldn't open file: $!";
-    $specificty = do { local $/; <OUT> };
-    while (<OUT>) {
-        $specificty .= $_;
-    }
-    close OUT;
-    $specificty =~ s/\s//g;
-    $specificty =~ s/[^agctn]//ig;
-
     print "\nSequences Loaded.\n";
 
 }
 
 ####Load SNP Seqs into PrimerMapper
+
 =head1 loadfile_SNP
  Title   :  loadfile_SNP
  Usage   :  $fasta_SNP = Tkx::tk___getOpenFile();
  Function:  loads SNP sequences into PrimerMapper program 
 =cut
-
 
 sub loadfile_SNP {
     $fasta_SNP = Tkx::tk___getOpenFile();
@@ -793,16 +763,6 @@ sub loadfile_SNP {
     }
     close IN_SNP;
     close OUT_SNP;
-
-    #stringify the specificity file
-    open OUT_SNP, $outfile_SNP or die "Couldn't open file: $!";
-    $specificty_SNP = do { local $/; <OUT_SNP> };
-    while (<OUT_SNP>) {
-        $specificty_SNP .= $_;
-    }
-    close OUT_SNP;
-    $specificty_SNP =~ s/\s//g;
-    $specificty_SNP =~ s/[^agctn]//ig;
 
     print "\nSequences Loaded.\n";
 
@@ -831,219 +791,93 @@ sub calculate {
         $foo = eval join '+', @increment;
 
         #declare output file
-        $out_image       = "GRAPHIC_$id.txt";
-        $outputfile_html = "canvas_$id.txt";
+        $out_image = "GRAPHIC_$id.txt";
 
-    #skip to next if selected 5' or 3' length is longer than the sequence length
-        if ( $five_prime_end > length $sequence ) {
-            next;
-        }
-        if ( $three_prime_end > length $sequence ) {
-            next;
-        }
-
-        #skip to next if sequence length is <100bps
-        if ( length $sequence < $min_size_seq ) {
-            next;
-        }
-
-        open FUSIONFILE, ">>$outputfile";
-        print FUSIONFILE "Header\tStart\tTm(degC)\tSequence\tSelf-comp\tGC%\n";
-        close FUSIONFILE;
-
-        open CANVASFILE, ">>$outputfile_html";
-        print CANVASFILE
-          "FS\tLF\tRS\tLR\t>\t#\tSEQ\n\t\t\t\t$id\t$len_seq\t$sequence\n";
-        close CANVASFILE;
-
-########################################>>>>>>>>>>>>>>>>>>>>>>>>
-######## FORWARD PRIMER
-########################################>>>>>>>>>>>>>>>>>>>>>>>>
-########################################>>>>>>>>>>>>>>>>>>>>>>>>
-################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
-########################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
-################################################################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
-
-######## FORWARD PRIMER
-        #start counting
-        my $start = 1;
-        for ( my $i = $start - 1 ; $i < $five_prime_end - 1 ; $i += 1 ) {
-            for ( my $a = $kmer_max ; $a >= $kmer_min ; $a-- ) {
-
-                #$kmer = int( rand($kmer_diff) ) + $kmer_min;
-                $_ = substr( $sequence, $i, $a );
-
-                #get self complementarity score
-                my $revF = reverse($_);
-                $revF =~ tr/ATGCatgc/TACGtacg/;
-                my $selfie_score = selfie( $_, $revF );
-
-                #Count Gs and Cs
-                my $countGC = tr/GCgc//;
-
-                #Calculate percent GC
-                my $percentGC = 100 * $countGC / $a;
-                my $percentGCrounded = sprintf( "%0.1f", $percentGC );
-
-                #calculate Tm
-                if ( $a <= 36 ) {
-                    $Tm = calcTm( $_, $DNA_conc, $salt );
-                }
-                else {
-                    $Tm = calclongTm( $_, $DNA_conc, $salt, $percentGCrounded );
-                }
-                my $Tmrounded = sprintf( "%0.1f", $Tm );
-
-                my $hairpin = calcdG($_);
-
-                my $primer_end = $i + $a;
-
-                #capture matches
-                my $number_matches = 0;
-                if ( $spec eq "Y" ) {
-                    my $mis_mismatch = mismatch_pattern( $_, $mis );
-                    my @approximate_matches =
-                      match_positions( $mis_mismatch, $specificty );
-                    $number_matches = @approximate_matches;
-                }
-
-                #define dinucleotide repeats and repetitive sequence
-                #and print results if statements are matched
-
-                ############HTML
-
-                if (   open( FUSIONFILE, ">>$outputfile" )
-                    && $Tmrounded ge $lower_tm
-                    && $Tmrounded le $upper_tm
-                    && $percentGC ge $lower_gc
-                    && $percentGC le $higher_gc
-                    && $selfie_score < $selfie_cuttof
-                    && calcRepeat( $_, $repetition ) == 1
-                    && $hairpin > "-9"
-                    && checkClamp_($_, $clamp) == 1 
-                    && checkSpecific_($number_matches, $spec) == 1 )
-                {
-                    print FUSIONFILE
-"$id\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
-                    push @array_length, $len_uniq;
-                    push @array_name,   $id_uniq;
-                    push @primers,      "$id:$_";
-                    open( OLIGOS, ">>$out_image" ) or die;
-                    print OLIGOS "$i\t$selfie_score\t$i\t$primer_end\n";
-                    close(OLIGOS);
-                    open( OUTS, ">>$out_single" ) or die;
-                    print OUTS "$i\t$foo\t$i\t$primer_end\n";
-                    close(OUTS);
-                    open( CANVASFILE, ">>$outputfile_html" )
-                      or die;
-                    print CANVASFILE "$i,\t$a,\n";
-                    close(CANVASFILE);
-
-                }
-            }
-        }
-
-########################################>>>>>>>>>>>>>>>>>>>>>>>>
-######## REVERSE PRIMER
-########################################>>>>>>>>>>>>>>>>>>>>>>>>
-########################################>>>>>>>>>>>>>>>>>>>>>>>>
-################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
-########################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
-################################################################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
-
-######## REVERSE PRIMER
-
-        #start counting for reverse primer
-        for (
-            my $j = length($sequence) - $three_prime_end ;
-            $j < length($sequence) ;
-            $j += 1
-          )
-        {
-            for ( my $y = $kmer_max_SNP ; $y >= $kmer_min_SNP ; $y-- ) {
-
-                #$kmer = int( rand($kmer_diff) ) + $kmer_min;
-                $_ = substr( $sequence, $j, $y );
-
-                #rev comp
-                my $revR = reverse($_);
-                $revR =~ tr/ATGCatgc/TACGtacg/;
-
-                #get self complementarity score
-                my $selfie_scoreR = selfie( $_, $revR );
-
-                #Count Gs and Cs
-                my $count_GC = tr/GCgc//;
-
-                #Calculate percent GC
-                my $percent_GC = 100 * $count_GC / $y;
-                my $percentGC_rounded = sprintf( "%0.1f", $percent_GC );
-
-                #calculate Tm
-                if ( $y <= 36 ) {
-                    $Tm2 = calcTm( $_, $DNA_conc, $salt );
-                }
-                else {
-                    $Tm2 =
-                      calclongTm( $_, $DNA_conc, $salt, $percentGC_rounded );
-                }
-                my $Tm_rounded = sprintf( "%0.1f", $Tm2 );
-
-                my $hairpin_r = calcdG($_);
-
-                my $primer_start_R = $j + $y;
-
-                #capture matches
-                my $number_matches_R = 0;
-                if ( $spec eq "Y" ) {
-                    my $mis_mismatch = mismatch_pattern( $_, $mis );
-                    my @approximate_matches =
-                      match_positions( $mis_mismatch, $specificty );
-                    $number_matches_R = @approximate_matches;
-                }
-
-                #define dinucleotide repeats and repetitive sequence
-                #and print results if statements are matched
-
-                ############html
-                if (   open( FUSIONFILE, ">>$outputfile" )
-                    && $Tm_rounded ge $lower_tm
-                    && $Tm_rounded le $upper_tm
-                    && $percent_GC ge $lower_gc
-                    && $percent_GC le $higher_gc
-                    && $selfie_scoreR < $selfie_cuttof
-                    && calcRepeat( $revR, $repetition ) == 1
-                    && $hairpin_r > "-9"
-                    && checkClamp_($revR, $clamp) == 1 
-                    && checkSpecific_($number_matches_R, $spec) == 1 )
-                {
-                    open( OLIGOS, ">>$out_image" ) or die;
-                    print OLIGOS "$j\t$selfie_scoreR\t$primer_start_R\t$j\n";
-                    close(OLIGOS);
-                    push @array_length, $len_uniq;
-                    push @array_name,   $id_uniq;
-                    push @primers,      "$id:$revR";
-                    open( OUTS, ">>$out_single" ) or die;
-                    print OUTS "$j\t$foo\t$primer_start_R\t$j\n";
-                    close(OUTS);
-                    open( CANVASFILE, ">>$outputfile_html" )
-                      or die;
-                    print CANVASFILE "\t\t$j,\t$y,\n";
-                    close(CANVASFILE);
-
-                    print FUSIONFILE
-"$id\t$j\t$Tm_rounded\tR:$revR\t$selfie_scoreR\t$percentGC_rounded\n";
-
-                }
-            }
-        }
-    }
-
-    foreach my $fp ( glob("canvas_*.txt") ) {
-        open my $fh, "<", $fp or die;
-        my $commander = "perl cols_to_rows.pl $fp";
-        system($commander);
+        my $p3 = "primer3_output";
+        open my $fh, ">>", $p3 or die;
+        print $fh "Sequence Name: " . $id . "\n";
         close $fh;
+
+        my $new_sequence =
+            "SEQUENCE_TEMPLATE="
+          . $sequence . "\n"
+          . "PRIMER_TASK=generic" . "\n"
+          . "PRIMER_PICK_LEFT_PRIMER=1" . "\n"
+          . "PRIMER_PICK_RIGHT_PRIMER=1" . "\n"
+          . "PRIMER_PRODUCT_SIZE_RANGE="
+          . $min_prod_size . "-"
+          . $max_prod_size . "\n"
+          . "PRIMER_SALT_MONOVALENT="
+          . $salt . "\n"
+          . "PRIMER_GC_CLAMP="
+          . $clamp . "\n"
+          . "PRIMER_MAX_TM="
+          . $upper_tm . "\n"
+          . "PRIMER_MIN_TM="
+          . $lower_tm . "\n"
+          . "PRIMER_MIN_SIZE="
+          . $kmer_min . "\n"
+          . "PRIMER_MAX_SIZE="
+          . $kmer_max . "\n"
+          . "PRIMER_MAX_GC="
+          . $higher_gc . "\n"
+          . "PRIMER_MIN_GC="
+          . $lower_gc . "\n"
+          . "PRIMER_MAX_NS_ACCEPTED=1" . "\n"
+          . "PRIMER_EXPLAIN_FLAG=1" . "\n" . "=";
+
+        my $temp_seq = "primer3_temp.txt";
+
+        open my $p3_fh, ">", $temp_seq or die;
+        print $p3_fh($new_sequence);
+
+        if ( $^O eq 'MSWin32' ) {
+            my $command = "primer3_core.exe -format_output < $temp_seq >> $p3";
+            system($command);
+        }
+        else {
+            my $command = "primer3_core -format_output < $temp_seq >> $p3";
+            system($command);
+        }
+
+        open $fh, "<", $p3 or die;
+        my $count = 0;
+        while ( my $row = <$fh> ) {
+
+            #print $row;
+            if ( $row =~
+/LEFT PRIMER\s+(\d*)\s+(\d+)\s+\d*\.\d+\s+\d*\.\d+\s+\d*\.\d+\s+\d*\.\d+\s+\d*\.\d+\s(.*)\n/
+              )
+            {
+                push @array_length, $len_uniq;
+                push @array_name,   $id_uniq;
+                my $add = $1 + $2;
+                open my $fh_oligo, ">>", $out_image or die;
+                print $fh_oligo(
+                    $1 . "\t" . $2 . "\t" . $1 . "\t" . $add . "\n" );
+                close $fh_oligo;
+                open my $fh_outs, ">>", $out_single or die;
+                print $fh_outs(
+                    $1 . "\t" . $foo . "\t" . $1 . "\t" . $add . "\n" );
+                close $fh_outs;
+            }
+            elsif ( $row =~
+/RIGHT PRIMER\s+(\d*)\s+(\d+)\s+\d*\.\d+\s+\d*\.\d+\s+\d*\.\d+\s+\d*\.\d+\s+\d*\.\d+\s(.*)\n/
+              )
+            {
+                push @array_length, $len_uniq;
+                push @array_name,   $id_uniq;
+                my $minus = $1 - $2;
+                open my $fh_oligo, ">>", $out_image or die;
+                print $fh_oligo(
+                    $1 . "\t" . $2 . "\t" . $1 . "\t" . $minus . "\n" );
+                close $fh_oligo;
+                open my $fh_outs, ">>", $out_single or die;
+                print $fh_outs(
+                    $1 . "\t" . $foo . "\t" . $1 . "\t" . $minus . "\n" );
+                close $fh_outs;
+            }
+        }
     }
     print "\nPrimer Design completed.\n";
 }
@@ -1147,201 +981,113 @@ sub calculate_SNP {
         #declare output file
         $out_image_SNP = "GRAPHIC_$id_SNP.txt";
 
-    #skip to next if selected 5' or 3' length is longer than the sequence length
-        if ( $five_prime_SNP > $snp ) {
-            next;
-        }
-        if ( $three_prime_SNP > ( $len_seq - $snp ) ) {
-            next;
-        }
-
-        #skip to next if sequence length is <100bps
-        if ( length $sequence < $min_size_seq ) {
-            next;
-        }
-
-        open FUSIONFILE_SNP, ">>$outputfile_SNP ";
-        print FUSIONFILE_SNP
-          "Header\tStart\tTm(degC)\tSequence\tSelf-comp\tGC%\n";
-        close FUSIONFILE_SNP;
-
         open AS_SNP, ">>$outputfile_SNP_AS ";
         print AS_SNP
-"Header\tTm(degC)\tAllele Specific Primer Sequences\t\tSelf-comp\tHairpin\tGC%\n";
+          "Header\tTm(degC)\tAllele Specific Primer Sequences\t\t\tGC%\n";
         close AS_SNP;
 
 ########################################>>>>>>>>>>>>>>>>>>>>>>>>
-######## FORWARD SNP PRIMER
-########################################>>>>>>>>>>>>>>>>>>>>>>>>
-########################################>>>>>>>>>>>>>>>>>>>>>>>>
-################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
-########################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
-################################################################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+######## SNP PRIMERS
 
-        #start counting
-        my $upstream = $snp - $five_prime_SNP;
+        my $p3_SNP = "primer3_output_SNP";
+        my $short_id = substr $id_SNP, 0, 20;
+        open my $fh_SNP, ">>", $p3_SNP or die;
+        print $fh_SNP "Sequence Name: " . $short_id . "\n";
+        close $fh_SNP;
+        my $anchor      = $snp - 150;
+        my $dist_before = $five_prime_SNP - $snp_distance;
+        my $dist_after  = $snp + $snp_distance;
 
-        for ( my $i = $upstream ; $i < $snp - $snp_distance ; $i += 1 ) {
-            for ( my $q = $kmer_max_SNP ; $q >= $kmer_min_SNP ; $q-- ) {
+        my $new_sequence_SNP =
+            "SEQUENCE_TEMPLATE="
+          . $sequence . "\n"
+          . "SEQUENCE_TARGET="
+          . $snp . ",1" . "\n"
+          . "PRIMER_TASK=generic" . "\n"
+          . "PRIMER_PICK_LEFT_PRIMER=1" . "\n"
+          . "SEQUENCE_PRIMER_PAIR_OK_REGION_LIST="
+          . $anchor . ","
+          . $dist_before . ","
+          . $dist_after . ","
+          . $three_prime_SNP . "\n"
+          . "PRIMER_PRODUCT_SIZE_RANGE=100-1500" . "\n"
+          . "PRIMER_MAX_TM="
+          . $upper_tm_SNP . "\n"
+          . "PRIMER_MIN_TM="
+          . $lower_tm_SNP . "\n"
+          . "PRIMER_GC_CLAMP="
+          . $clamp_SNP . "\n"
+          . "PRIMER_SALT_MONOVALENT="
+          . $salt_SNP . "\n"
+          . "PRIMER_MAX_GC="
+          . $higher_gc_SNP . "\n"
+          . "PRIMER_MIN_GC="
+          . $lower_gc_SNP . "\n"
+          . "PRIMER_PICK_RIGHT_PRIMER=1" . "\n"
+          . "PRIMER_MIN_SIZE="
+          . $kmer_min_SNP . "\n"
+          . "PRIMER_MAX_SIZE="
+          . $kmer_max_SNP . "\n"
+          . "PRIMER_MAX_NS_ACCEPTED=1" . "\n"
+          . "PRIMER_EXPLAIN_FLAG=1" . "\n" . "=";
 
-                #$kmer_SNP = int( rand($kmer_diff_SNP) ) + $kmer_min_SNP;
-                $_ = substr( $sequence, $i, $q );
+        my $temp_seq_SNP = "primer3_temp.txt";
 
-                #get self complementarity score
-                my $revF = reverse($_);
-                $revF =~ tr/ATGCatgc/TACGtacg/;
+        open my $p3_fh_SNP, ">", $temp_seq_SNP or die;
+        print $p3_fh_SNP($new_sequence_SNP);
 
-                my $selfie_score = selfie( $_, $revF );
+        if ( $^O eq 'MSWin32' ) {
+            my $command_SNP =
+              "primer3_core.exe -format_output < $temp_seq_SNP >> $p3_SNP";
+            system($command_SNP);
+        }
+        else {
+            my $command_SNP =
+              "primer3_core -format_output < $temp_seq_SNP >> $p3_SNP";
+            system($command_SNP);
+        }
 
-                #Count Gs and Cs
-                my $countGC = tr/GCgc//;
+        open $fh_SNP, "<", $p3_SNP or die;
+        my $count = 0;
+        while ( my $row = <$fh_SNP> ) {
 
-                #Calculate percent GC
-                my $percentGC = 100 * $countGC / $q;
-                my $percentGCrounded = sprintf( "%0.1f", $percentGC );
-
-                #calculate Tm
-                if ( $q <= 36 ) {
-                    $Tm_SNP = calcTm( $_, $DNA_conc_SNP, $salt_SNP );
-                }
-                else {
-                    $Tm_SNP = calclongTm( $_, $DNA_conc_SNP,
-                        $salt_SNP, $percentGCrounded );
-                }
-                my $Tmrounded = sprintf( "%0.1f", $Tm_SNP );
-
-                my $hairpin = calcdG($_);
-
-                my $primer_end = $i + $q;
-
-                #capture matches
-                my $number_matches = 0;
-                if ( $spec_SNP eq "Y" ) {
-                    my $mis_mismatch = mismatch_pattern( $_, $mis_SNP );
-                    my @approximate_matches =
-                      match_positions( $mis_mismatch, $specificty_SNP );
-                    $number_matches = @approximate_matches;
-                }
-
-                #define dinucleotide repeats and repetitive sequence
-                #and print results if statements are matched
-                if (   open( FUSIONFILE_SNP, ">>$outputfile_SNP " )
-                    && $Tmrounded ge $lower_tm_SNP
-                    && $Tmrounded le $upper_tm_SNP
-                    && $percentGC ge $lower_gc_SNP
-                    && $percentGC le $higher_gc_SNP
-                    && $selfie_score < $selfie_cuttof_SNP
-                    && calcRepeat( $_, $repetition ) == 1
-                    && $hairpin > "-9"
-                    && checkClamp_($_, $clamp_SNP) == 1 
-                    && checkSpecific_($number_matches, $spec_SNP) == 1 
-                    )
-                {
-                    print FUSIONFILE_SNP
-"$id_SNP\t$i\t$Tmrounded\tF:$_\t$selfie_score\t$percentGCrounded\n";
-                    push @array_length_SNP, $len_uniq_SNP;
-                    push @array_name_SNP,   $id_uniq_SNP;
-                    push @SNP_primers,      "$id_SNP:$_";
-                    open( OLIGOS_SNP, ">>$out_image_SNP" )
-                      or die;
-                    print OLIGOS_SNP "$snp\t$selfie_score\t$i\t$primer_end\n";
-                    close(OLIGOS_SNP);
-                    open( OUTS_SNP, ">>$out_single_SNP" )
-                      or die;
-                    print OUTS_SNP "$i\t$foo_SNP \t$i\t$primer_end\n";
-                    close(OUTS_SNP);
-
-                }
+            #print $row;
+            if ( $row =~
+/LEFT PRIMER\s+(\d*)\s+(\d+)\s+\d*\.\d+\s+\d*\.\d+\s+\d*\.\d+\s+\d*\.\d+\s+\d*\.\d+\s(.*)\n/
+              )
+            {
+                push @array_length_SNP, $len_uniq_SNP;
+                push @array_name_SNP,   $id_uniq_SNP;
+                my $add = $1 + $2;
+                open my $fh_oligo_SNP, ">>", $out_image_SNP or die;
+                print $fh_oligo_SNP(
+                    $1 . "\t" . $2 . "\t" . $1 . "\t" . $add . "\n" );
+                close $fh_oligo_SNP;
+                open my $fh_outs_SNP, ">>", $out_single_SNP or die;
+                print $fh_outs_SNP(
+                    $1 . "\t" . $foo_SNP . "\t" . $1 . "\t" . $add . "\n" );
+                close $fh_outs_SNP;
+            }
+            elsif ( $row =~
+/RIGHT PRIMER\s+(\d*)\s+(\d+)\s+\d*\.\d+\s+\d*\.\d+\s+\d*\.\d+\s+\d*\.\d+\s+\d*\.\d+\s(.*)\n/
+              )
+            {
+                push @array_length_SNP, $len_uniq_SNP;
+                push @array_name_SNP,   $id_uniq_SNP;
+                my $minus = $1 - $2;
+                open my $fh_oligo_SNP, ">>", $out_image_SNP or die;
+                print $fh_oligo_SNP(
+                    $1 . "\t" . $2 . "\t" . $1 . "\t" . $minus . "\n" );
+                close $fh_oligo_SNP;
+                open my $fh_outs_SNP, ">>", $out_single_SNP or die;
+                print $fh_outs_SNP(
+                    $1 . "\t" . $foo_SNP . "\t" . $1 . "\t" . $minus . "\n" );
+                close $fh_outs_SNP;
             }
         }
 
-########################################>>>>>>>>>>>>>>>>>>>>>>>>
-######## REVERSE SNP PRIMER
-########################################>>>>>>>>>>>>>>>>>>>>>>>>
-########################################>>>>>>>>>>>>>>>>>>>>>>>>
-################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
-########################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
-################################################################################################################################################################>>>>>>>>>>>>>>>>>>>>>>>>
+        print "\nSNP Primer Design completed.\n";
 
-        #start counting for reverse primer
-        my $downstream = $snp + $three_prime_SNP;
-
-        for ( my $j = $snp + $snp_distance ; $j < $downstream ; $j += 1 ) {
-            for ( my $c = $kmer_max_SNP ; $c >= $kmer_min_SNP ; $c-- ) {
-
-                #$kmer_SNP = int( rand($kmer_diff_SNP) ) + $kmer_min_SNP;
-                $_ = substr( $sequence, $j, $c );
-
-                #rev comp
-                my $revR = reverse($_);
-                $revR =~ tr/ATGCatgc/TACGtacg/;
-
-                #get self complementarity score
-                my $selfie_scoreR = selfie( $_, $revR );
-
-                #Count Gs and Cs
-                my $count_GC = tr/GCgc//;
-
-                #Calculate percent GC
-                my $percent_GC = 100 * $count_GC / $c;
-                my $percentGC_rounded = sprintf( "%0.1f", $percent_GC );
-
-                #calculate Tm
-                if ( $c <= 36 ) {
-                    $Tm2_SNP = calcTm( $_, $DNA_conc_SNP, $salt_SNP );
-                }
-                else {
-                    $Tm2_SNP =
-                      calclongTm( $_, $DNA_conc_SNP,
-                        $salt_SNP, $percentGC_rounded );
-                }
-                my $Tm_rounded = sprintf( "%0.1f", $Tm2_SNP );
-
-                my $hairpin_r = calcdG($_);
-
-                my $primer_start_R = $j + $c;
-
-                #capture matches
-                my $number_matches_R = 0;
-                if ( $spec_SNP eq "Y" ) {
-                    my $mis_mismatch = mismatch_pattern( $_, $mis_SNP );
-                    my @approximate_matches =
-                      match_positions( $mis_mismatch, $specificty_SNP );
-                    $number_matches_R = @approximate_matches;
-                }
-
-                #define dinucleotide repeats and repetitive sequence
-                #and print results if statements are matched
-                if (   open( FUSIONFILE_SNP, ">>$outputfile_SNP" )
-                    && $Tm_rounded ge $lower_tm_SNP
-                    && $Tm_rounded le $upper_tm_SNP
-                    && $percent_GC ge $lower_gc_SNP
-                    && $percent_GC le $higher_gc_SNP
-                    && $selfie_scoreR < $selfie_cuttof_SNP
-                    && calcRepeat( $revR, $repetition ) == 1
-                    && $hairpin_r > "-9"
-                    && checkClamp_($revR, $clamp_SNP) == 1 
-                    && checkSpecific_($number_matches_R, $spec_SNP) == 1 )
-                {
-                    open( OLIGOS_SNP, ">>$out_image_SNP" )
-                      or die;
-                    print OLIGOS_SNP
-                      "$snp\t$selfie_scoreR\t$primer_start_R\t$j\n";
-                    close(OLIGOS_SNP);
-                    push @array_length_SNP, $len_uniq_SNP;
-                    push @array_name_SNP,   $id_uniq_SNP;
-                    push @SNP_primers,      "$id_SNP:$revR";
-                    open( OUTS_SNP, ">>$out_single_SNP" )
-                      or die;
-                    print OUTS_SNP "$j\t$foo_SNP \t$primer_start_R\t$j\n";
-                    close(OUTS_SNP);
-
-                    print FUSIONFILE_SNP
-"$id_SNP\t$j\t$Tm_rounded\tR:$revR\t$selfie_scoreR\t$percentGC_rounded\n";
-
-                }
-            }
-        }
 ########################################>>>>>>>>>>>>>>>>>>>>>>>>
 ######## ALLELE SPECIFIC PRIMER
 ########################################>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1359,8 +1105,6 @@ sub calculate_SNP {
             my $revFA = reverse($_);
             $revFA =~ tr/ATGCatgc/TACGtacg/;
 
-            my $selfie_scoreA = selfie( $_, $revFA );
-
             #Count Gs and Cs
             my $countGCA = tr/GCgc//;
 
@@ -1370,24 +1114,19 @@ sub calculate_SNP {
 
             #calculate Tm
             if ( $p <= 36 ) {
-                $Tm3_SNP = calcTm( $revFA, $DNA_conc_SNP, $salt_SNP );
+                $Tm3_SNP = calcTm( $revFA, 100, $salt_SNP );
             }
             else {
                 $Tm3_SNP =
-                  calclongTm( $revFA, $DNA_conc_SNP,
-                    $salt_SNP, $percentGCroundedA );
+                  calclongTm( $revFA, 100, $salt_SNP, $percentGCroundedA );
             }
             my $TmroundedA = sprintf( "%0.1f", $Tm3_SNP );
 
-            my $hairpinA = calcdG($revFA);
-
-            #define dinucleotide repeats and repetitive sequence
-            #and print results if statements are matched
             if ( open( AS_SNP, ">>$outputfile_SNP_AS" )
                 && $degen eq "type_1" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedA \tReverse: $revFA.T\t$revFA.C\t$selfie_scoreA\t$hairpinA\t$percentGCroundedA\n";
+"$short_id\t$TmroundedA \tReverse: $revFA.T\t$revFA.C\t$percentGCroundedA\n";
 
             }
 
@@ -1395,7 +1134,7 @@ sub calculate_SNP {
                 && $degen eq "type_2" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedA \tReverse: $revFA.G\t$revFA.A\t$selfie_scoreA\t$hairpinA\t$percentGCroundedA\n";
+"$short_id\t$TmroundedA \tReverse: $revFA.G\t$revFA.A\t$percentGCroundedA\n";
 
             }
 
@@ -1403,7 +1142,7 @@ sub calculate_SNP {
                 && $degen eq "type_3" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedA \tReverse: $revFA.C\t$revFA.G\t$selfie_scoreA\t$hairpinA\t$percentGCroundedA\n";
+"$short_id\t$TmroundedA \tReverse: $revFA.C\t$revFA.G\t$percentGCroundedA\n";
 
             }
 
@@ -1411,7 +1150,7 @@ sub calculate_SNP {
                 && $degen eq "type_4" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedA \tReverse: $revFA.T\t$revFA.A\t$selfie_scoreA\t$hairpinA\t$percentGCroundedA\n";
+"$short_id\t$TmroundedA \tReverse: $revFA.T\t$revFA.A\t$percentGCroundedA\n";
 
             }
 
@@ -1419,7 +1158,7 @@ sub calculate_SNP {
                 && $degen eq "type_5" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedA \tReverse: $revFA.C\t$revFA.A\t$selfie_scoreA\t$hairpinA\t$percentGCroundedA\n";
+"$short_id\t$TmroundedA \tReverse: $revFA.C\t$revFA.A\t$percentGCroundedA\n";
 
             }
 
@@ -1427,7 +1166,7 @@ sub calculate_SNP {
                 && $degen eq "type_6" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedA \tReverse: $revFA.T\t$revFA.G\t$selfie_scoreA\t$hairpinA\t$percentGCroundedA\n";
+"$short_id\t$TmroundedA \tReverse: $revFA.T\t$revFA.G\t$percentGCroundedA\n";
 
             }
 
@@ -1435,7 +1174,7 @@ sub calculate_SNP {
                 && $degen eq "type_7" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedA \tReverse: $revFA.G\t$revFA.C\t$revFA.A\t$selfie_scoreA\t$hairpinA\t$percentGCroundedA\n";
+"$short_id\t$TmroundedA \tReverse: $revFA.G\t$revFA.C\t$revFA.A\t$percentGCroundedA\n";
 
             }
 
@@ -1443,7 +1182,7 @@ sub calculate_SNP {
                 && $degen eq "type_8" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedA \tReverse: $revFA.T\t$revFA.C\t$revFA.A\t$selfie_scoreA\t$hairpinA\t$percentGCroundedA\n";
+"$short_id\t$TmroundedA \tReverse: $revFA.T\t$revFA.C\t$revFA.A\t$percentGCroundedA\n";
 
             }
 
@@ -1451,7 +1190,7 @@ sub calculate_SNP {
                 && $degen eq "type_9" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedA \tReverse: $revFA.T\t$revFA.G\t$revFA.A\t$selfie_scoreA\t$hairpinA\t$percentGCroundedA\n";
+"$short_id\t$TmroundedA \tReverse: $revFA.T\t$revFA.G\t$revFA.A\t$percentGCroundedA\n";
 
             }
 
@@ -1459,7 +1198,7 @@ sub calculate_SNP {
                 && $degen eq "type_10" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedA \tReverse: $revFA.T\t$revFA.G\t$revFA.C\t$selfie_scoreA\t$hairpinA\t$percentGCroundedA\n";
+"$short_id\t$TmroundedA \tReverse: $revFA.T\t$revFA.G\t$revFA.C\t$percentGCroundedA\n";
 
             }
 
@@ -1477,8 +1216,6 @@ sub calculate_SNP {
             my $revFAB = reverse($_);
             $revFAB =~ tr/ATGCatgc/TACGtacg/;
 
-            my $selfie_scoreAB = selfie( $_, $revFAB );
-
             #Count Gs and Cs
             my $countGCAB = tr/GCgc//;
 
@@ -1488,24 +1225,19 @@ sub calculate_SNP {
 
             #calculate Tm
             if ( $u <= 36 ) {
-                $Tm4_SNP = calcTm( $_, $DNA_conc_SNP, $salt_SNP );
+                $Tm4_SNP = calcTm( $_, 100, $salt_SNP );
             }
             else {
                 $Tm4_SNP =
-                  calclongTm( $_, $DNA_conc_SNP, $salt_SNP,
-                    $percentGCroundedAB );
+                  calclongTm( $_, 100, $salt_SNP, $percentGCroundedAB );
             }
             my $TmroundedAB = sprintf( "%0.1f", $Tm4_SNP );
 
-            my $hairpinAB = calcdG($_);
-
-            #define dinucleotide repeats and repetitive sequence
-            #and print results if statements are matched
             if ( open( AS_SNP, ">>$outputfile_SNP_AS" )
                 && $degen eq "type_1" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedAB \tForward: $_.A\t$_.G\t$selfie_scoreAB\t$hairpinAB\t$percentGCroundedAB\n";
+"$short_id\t$TmroundedAB \tForward: $_.A\t$_.G\t$percentGCroundedAB\n";
 
             }
 
@@ -1513,7 +1245,7 @@ sub calculate_SNP {
                 && $degen eq "type_2" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedAB \tForward: $_.C\t$_.T\t$selfie_scoreAB\t$hairpinAB\t$percentGCroundedAB\n";
+"$short_id\t$TmroundedAB \tForward: $_.C\t$_.T\t$percentGCroundedAB\n";
 
             }
 
@@ -1521,7 +1253,7 @@ sub calculate_SNP {
                 && $degen eq "type_3" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedAB \tForward: $_.G\t$_.C\t$selfie_scoreAB\t$hairpinAB\t$percentGCroundedAB\n";
+"$short_id\t$TmroundedAB \tForward: $_.G\t$_.C\t$percentGCroundedAB\n";
 
             }
 
@@ -1529,7 +1261,7 @@ sub calculate_SNP {
                 && $degen eq "type_4" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedAB \tForward: $_.A\t$_.T\t$selfie_scoreAB\t$hairpinAB\t$percentGCroundedAB\n";
+"$short_id\t$TmroundedAB \tForward: $_.A\t$_.T\t$percentGCroundedAB\n";
 
             }
 
@@ -1537,7 +1269,7 @@ sub calculate_SNP {
                 && $degen eq "type_5" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedAB \tForward: $_.G\t$_.T\t$selfie_scoreAB\t$hairpinAB\t$percentGCroundedAB\n";
+"$short_id\t$TmroundedAB \tForward: $_.G\t$_.T\t$percentGCroundedAB\n";
 
             }
 
@@ -1545,7 +1277,7 @@ sub calculate_SNP {
                 && $degen eq "type_6" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedAB \tForward: $_.A\t$_.C\t$selfie_scoreAB\t$hairpinAB\t$percentGCroundedAB\n";
+"$short_id\t$TmroundedAB \tForward: $_.A\t$_.C\t$percentGCroundedAB\n";
 
             }
 
@@ -1553,7 +1285,7 @@ sub calculate_SNP {
                 && $degen eq "type_7" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedAB \tForward: $_.C\t$_.G\t$_.T\t$selfie_scoreAB\t$hairpinAB\t$percentGCroundedAB\n";
+"$short_id\t$TmroundedAB \tForward: $_.C\t$_.G\t$_.T\t$percentGCroundedAB\n";
 
             }
 
@@ -1561,7 +1293,7 @@ sub calculate_SNP {
                 && $degen eq "type_8" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedAB \tReverse:$_.A\t$_.G\t$_.T\t$selfie_scoreAB\t$hairpinAB\t$percentGCroundedAB\n";
+"$short_id\t$TmroundedAB \tReverse:$_.A\t$_.G\t$_.T\t$percentGCroundedAB\n";
 
             }
 
@@ -1569,7 +1301,7 @@ sub calculate_SNP {
                 && $degen eq "type_9" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedAB \tForward: $_.A\t$_.C\t$_.T\t$selfie_scoreAB\t$hairpinAB\t$percentGCroundedAB\n";
+"$short_id\t$TmroundedAB \tForward: $_.A\t$_.C\t$_.T\t$percentGCroundedAB\n";
 
             }
 
@@ -1577,186 +1309,20 @@ sub calculate_SNP {
                 && $degen eq "type_10" )
             {
                 print AS_SNP
-"$id_SNP\t$TmroundedAB \tForward: $_.A\t$_.C\t$_.G\t$selfie_scoreAB\t$hairpinAB\t$percentGCroundedAB\n";
+"$short_id\t$TmroundedAB \tForward: $_.A\t$_.C\t$_.G\t$percentGCroundedAB\n";
 
             }
 
         }
 
         ################
-
     }
-
     ################### ----> Allele-Specific_END
     print "\nSNP Primer Design completed.\n";
 }
 
 Tkx::MainLoop();
 
-####################################
-####################################
-####################################
-####################################
-####################################
-=head1 checkClamp_
- Title   :  checkClamp_
- Usage   :  -command => sub { primer_dimer($oligo, $clamp); }
- Function:  checks to see if gc clamp paramter is met
- Returns :  1 (true) or 0 (false)
-=cut
-
-sub checkClamp_ {
-    my $checkPrimer = shift;
-    my $clampChoice = shift;
-
-        if ($clampChoice eq "N"){
-            return 1;
-        }
-        elsif ($clampChoice eq "Y" && $checkPrimer =~ m/cg$/i or $checkPrimer =~ m/gc$/i or $checkPrimer =~ m/gg$/i or $checkPrimer =~ m/cc$/i){
-            return 1;
-        }
-        else {
-            return 0;
-        }  
-}
-####################################
-####################################
-=head1 checkSpecific_
- Title   :  checkSpecific_
- Usage   :  -command => sub { primer_dimer($number_matches, $spec); }
- Function:  checks to see if sequence specificty paramter is met
- Returns :  1 (true) or 0 (false)
-=cut
-
-sub checkSpecific_ {
-    my $specificNumber = shift;
-    my $specificChoice = shift;
-
-        if ($specificChoice eq "N"){
-            return 1;
-        }
-        elsif ($specificChoice eq "Y" && $specificNumber == 1){
-            return 1;
-        }
-        else {
-            return 0;
-        }  
-}
-####################################
-=head1 primer_dimer
- Title   :  primer_dimer
- Usage   :  -command => sub { primer_dimer(\@primers); }
- Function:  implements a combinations without replacements algorithm (n choose k) for all primers
-            (both forward and reverse) to calculate cross-complementarity primer-dimer scores
- Returns :  primer_dimer_scores.tsv
-=cut
-
-sub primer_dimer {
-    print
-      "\nCalculating global primer dimer score file for multiplex PCR....\n";
-
-    my $primer_dimer_input = "primers_combos.txt";
-    my $primer_dimer;
-
-    open IN, ">$primer_dimer_input" or die "Couldn't open file: $!";
-
-    my $strings = \@primers;
-
-    sub combine;
-
-    print IN "@$_\n" for combine $strings, 2;
-    close IN;
-
-#--GET_Primer_Dimer_Scores--
-    my $primer_dimer_score = "primer_dimer_scores.tsv";
-    open IN,    "<", "$primer_dimer_input" or die "Couldn't open file: $!";
-    open OUTER, '>', $primer_dimer_score   or die "Can't write new file: $!";
-    print OUTER
-"BASED ON IN SILICO AND PCR TESTING, PRIMER DIMER SCORES SHOULD BE LESS THAN OR EQUAL TO 12 \n\n";
-    while (<IN>) {
-
-        if ( $_ =~ m/(.+):(.+)\s(.+):(.+)\n/i ) {
-            $primer_dimer = selfie( $2, $4 );
-            print OUTER "$1:$2\t$3:$4\tDimer_score: $primer_dimer\n";
-        }
-    }
-    close OUTER;
-    close IN;
-
-    unlink $primer_dimer_input;
-
-    print "\nGlobal Primer Dimer values collected.\n";
-}
-
-####################################
-=head1 primer_dimer_SNP
- Title   :  primer_dimer_SNP
- Usage   :  -command => sub { primer_dimer_SNP(\@SNP_primers); }
- Function:  implements a combinations without replacements algorithm (n choose k) for all SNP primers
-            (both forward and reverse) to calculate cross-complementarity SNP primer-dimer scores
- Returns :  primer_dimer_scores_SNP.tsv
-=cut
-
-sub primer_dimer_SNP {
-
-    print
-"\nCalculating global SNP primer dimer score file for multiplex PCR....\n";
-
-    my $primer_dimer_input = "primers_combos.txt";
-    my $primer_dimer;
-
-    open IN, ">$primer_dimer_input" or die "Couldn't open file: $!";
-
-    my $strings = \@SNP_primers;
-
-    sub combine;
-
-    print IN "@$_\n" for combine $strings, 2;
-    close IN;
-
-#--GET_Primer_Dimer_Scores--
-    my $primer_dimer_score = "primer_dimer_scores_SNP.tsv";
-    open IN,    "<", "$primer_dimer_input" or die "Couldn't open file: $!";
-    open OUTER, '>', $primer_dimer_score   or die "Can't write new file: $!";
-    print OUTER
-"BASED ON IN SILICO AND PCR TESTING, PRIMER DIMER SCORES SHOULD BE LESS THAN OR EQUAL TO 12 \n\n";
-    while (<IN>) {
-
-        if ( $_ =~ m/(.+):(.+)\s(.+):(.+)\n/i ) {
-            push @SNP_primers, "F:$_";
-            $primer_dimer = selfie( $2, $4 );
-            print OUTER "$1:$2\t$3:$4\tDimer_score: $primer_dimer\n";
-        }
-    }
-    close OUTER;
-    close IN;
-
-    unlink $primer_dimer_input;
-
-    print "\nGlobal Primer Dimer values collected.\n";
-}
-
-
-sub combine {
-
-    my ( $list, $n ) = @_;
-    die "Insufficient list members for primer dimer analysis"
-      if $n > @$list;
-
-    return map [$_], @$list if $n <= 1;
-
-    my @comb;
-
-    for ( my $i = 0 ; $i + $n <= @$list ; ++$i ) {
-        my $val  = $list->[$i];
-        my @rest = @$list[ $i + 1 .. $#$list ];
-        push @comb, [ $val, @$_ ] for combine \@rest, $n - 1;
-    }
-
-    return @comb;
-}
-
-####################################
 ####################################
 
 =pod 
@@ -1772,13 +1338,13 @@ Note: must have web_blast.pl script in PATH for BLAST feature
 ####################################
 ####################################
 ####################################
+
 =head1 web_blast_ncbi
  Title   :  web_blast_ncbi
  Usage   :  -command => sub { web_blast_ncbi(); }
  Function:  runs remote BLAST from PrimerMapper using the script web_blast.pl
  Returns :  BLAST result in single text file 
 =cut
-
 
 sub web_blast_ncbi {
 
