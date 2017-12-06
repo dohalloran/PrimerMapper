@@ -2,6 +2,7 @@ Makefile.PL
 MANIFEST
 README
 t/PrimerMapper.t
+lib/web_blast.pl
 lib/PrimerMapper.pm
 lib/PrimerMapperGraphics.pm
 lib/PrimerMapperUtilities.pm
