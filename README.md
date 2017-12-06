@@ -24,24 +24,9 @@ Bio::SeqFeature::Generic
 WARNING: the option 'clean_up' deletes the '.txt' extension files generated from cwd   
 
 ## Usage 
-Run as follows:  
+From the commandline, type:  
 ```perl
-  use strict;
-  use warnings;
-  use PRIMERVIEW;
-
-  my $in_file = "test_seqs.fasta";
-
-  my $tmp = PRIMERVIEW->new();
- 
-   $tmp->load_selections(  
-      in_file         => $in_file, 
-      single_view     => "1",   
-      batch_view      => "1",      
-      clean_up        => "1"   
-   ); 
-   
-   $tmp->run_primerview();  
+  perl PrimerMapper_driver.pl
 ``` 
 
 ## Contributing
