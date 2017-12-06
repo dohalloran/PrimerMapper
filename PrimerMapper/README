@@ -20,6 +20,7 @@ DEPENDENCIES
 
 The package require these modules and libraries:
 
+  primer3
   Tkx
   Cwd
   Bio::SeqIO
