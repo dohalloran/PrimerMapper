@@ -4,7 +4,7 @@ Author: Damien O'Halloran, The George Washington University
 [![GitHub issues](https://img.shields.io/github/issues/dohalloran/PrimerMapper.svg)](https://github.com/dohalloran/PrimerMapper/issues)
 
 ## Installation
-1. Download and extract the primerview.zip file  
+1. Clone the PrimerMapper repo  
 `git clone https://github.com/dohalloran/PrimerMapper.git`  
 2. The extracted dir will be called PrimerMapper  
 ```cmd
