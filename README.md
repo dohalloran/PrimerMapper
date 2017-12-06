@@ -36,7 +36,6 @@ All contributions are welcome.
 
 PrimerMapper was successfully tested on:
 
-- [x] Microsoft Windows 7 Enterprise ver.6.1
 - [x] Linux Mint 64-bit ver.18
 
 ## Support
