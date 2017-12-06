@@ -5,8 +5,8 @@ Author: Damien O'Halloran, The George Washington University
 
 ## Installation
 1. Download and extract the primerview.zip file  
-`tar -xzvf PrimerMapper.zip`  
-2. The extracted dir will be called PRIMERVIEW  
+`git clone https://github.com/dohalloran/PrimerMapper.git`  
+2. The extracted dir will be called PrimerMapper  
 ```cmd
   cd PrimerMapper  
   perl Makefile.PL  
@@ -25,7 +25,7 @@ WARNING: the option 'clean_up' deletes the '.txt' extension files generated from
 
 ## Usage 
 From the commandline, type:  
-```perl
+```cmd
   perl PrimerMapper_driver.pl
 ``` 
 
