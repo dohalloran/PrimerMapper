@@ -125,7 +125,7 @@ sub new {
 ####Global Primer Design Defaults
 my $fasta;
 my $min_prod_size = "100";
-my $max_prod_size = "1000";
+my $max_prod_size = "800";
 my $kmer_max      = "25";
 my $kmer_min      = "18";
 my $clamp         = "0";
@@ -793,9 +793,8 @@ sub calculate {
         #declare output file
         $out_image = "GRAPHIC_$id.txt";
 
-        my $p3 = "primer3_output";
+        my $p3 = $id."primer3_output";
         open my $fh, ">>", $p3 or die;
-        print $fh "Sequence Name: " . $id . "\n";
         close $fh;
 
         my $new_sequence =
@@ -921,6 +920,8 @@ sub calculate_SNP {
             $snp = $1;
         }
 
+        print "yo: ".$snp."\n";
+
         ###################
         if ( $sequence =~ m/R/ ) {
             $degen = "type_1";
@@ -989,8 +990,8 @@ sub calculate_SNP {
 ########################################>>>>>>>>>>>>>>>>>>>>>>>>
 ######## SNP PRIMERS
 
-        my $p3_SNP = "primer3_output_SNP";
         my $short_id = substr $id_SNP, 0, 20;
+        my $p3_SNP = $short_id . "primer3_output_SNP";
         open my $fh_SNP, ">>", $p3_SNP or die;
         print $fh_SNP "Sequence Name: " . $short_id . "\n";
         close $fh_SNP;
@@ -1061,7 +1062,7 @@ sub calculate_SNP {
                 my $add = $1 + $2;
                 open my $fh_oligo_SNP, ">>", $out_image_SNP or die;
                 print $fh_oligo_SNP(
-                    $1 . "\t" . $2 . "\t" . $1 . "\t" . $add . "\n" );
+                    $snp . "\t" . $2 . "\t" . $1 . "\t" . $add . "\n" );
                 close $fh_oligo_SNP;
                 open my $fh_outs_SNP, ">>", $out_single_SNP or die;
                 print $fh_outs_SNP(
@@ -1077,7 +1078,7 @@ sub calculate_SNP {
                 my $minus = $1 - $2;
                 open my $fh_oligo_SNP, ">>", $out_image_SNP or die;
                 print $fh_oligo_SNP(
-                    $1 . "\t" . $2 . "\t" . $1 . "\t" . $minus . "\n" );
+                    $snp . "\t" . $2 . "\t" . $1 . "\t" . $minus . "\n" );
                 close $fh_oligo_SNP;
                 open my $fh_outs_SNP, ">>", $out_single_SNP or die;
                 print $fh_outs_SNP(
