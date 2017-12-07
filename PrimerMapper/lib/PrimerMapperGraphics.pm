@@ -368,6 +368,8 @@ sub graphics_all_primers_SNP {
             chomp;
 
             ( $snp, $score, $start, $end ) = split /\t/;
+
+            print $snp."\n";
             if ( $start - $end < 1 ) {
                 $orientation = +1;
             }
