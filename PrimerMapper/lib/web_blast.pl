@@ -30,7 +30,7 @@ foreach $query (@ARGV) {
 # build the request
 $args = "CMD=Put&PROGRAM=$program&DATABASE=$database&QUERY=" . $encoded_query;
 
-$req = new HTTP::Request POST => 'http://www.ncbi.nlm.nih.gov/blast/Blast.cgi';
+$req = new HTTP::Request POST => 'https://www.ncbi.nlm.nih.gov/blast/Blast.cgi';
 $req->content_type('application/x-www-form-urlencoded');
 $req->content($args);
 
@@ -53,7 +53,7 @@ while (true) {
     sleep 5;
 
     $req = new HTTP::Request GET =>
-"http://www.ncbi.nlm.nih.gov/blast/Blast.cgi?CMD=Get&FORMAT_OBJECT=SearchInfo&RID=$rid&ALIGNMENTS=5&DESCRIPTIONS=5";
+"https://www.ncbi.nlm.nih.gov/blast/Blast.cgi?CMD=Get&FORMAT_OBJECT=SearchInfo&RID=$rid&ALIGNMENTS=5&DESCRIPTIONS=5";
     $response = $ua->request($req);
 
     if ( $response->content =~ /\s+Status=WAITING/m ) {
@@ -91,7 +91,7 @@ while (true) {
 
 # retrieve and display results
 $req = new HTTP::Request GET =>
-"http://www.ncbi.nlm.nih.gov/blast/Blast.cgi?CMD=Get&FORMAT_TYPE=Text&RID=$rid&ALIGNMENTS=5&DESCRIPTIONS=5";
+"https://www.ncbi.nlm.nih.gov/blast/Blast.cgi?CMD=Get&FORMAT_TYPE=Text&RID=$rid&ALIGNMENTS=5&DESCRIPTIONS=5";
 $response = $ua->request($req);
 
 my $blastfile = "blast_primers.fasta";
