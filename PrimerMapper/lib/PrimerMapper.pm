@@ -920,8 +920,6 @@ sub calculate_SNP {
             $snp = $1;
         }
 
-        print "yo: ".$snp."\n";
-
         ###################
         if ( $sequence =~ m/R/ ) {
             $degen = "type_1";
