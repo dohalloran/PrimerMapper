@@ -334,7 +334,7 @@ $lower_tm_snp_->g_grid( -column => 5, -row => 5, -sticky => "we" );
 
 my $gc_clamp_snp_ =
   $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$clamp_SNP );
-$gc_clamp_snp_->g_grid( -column => 7, -row => 5, -sticky => "e" );
+$gc_clamp_snp_->g_grid( -column => 7, -row => 5, -sticky => "we" );
 
 my $salt_snp_ =
   $design_frame_->new_ttk__entry( -width => 3, -textvariable => \$salt_SNP );
@@ -437,13 +437,13 @@ $out_frame_primers->g_grid(
 
 my $five_primer_ending_ = $out_frame_primers->new_ttk__entry(
     -width        => 3,
-    -textvariable => \$min_prod_size
+    -textvariable => \$max_prod_size
 );
 $five_primer_ending_->g_grid( -column => 2, -row => 2, -sticky => "we" );
 
 my $three_primer_ending_ = $out_frame_primers->new_ttk__entry(
     -width        => 3,
-    -textvariable => \$max_prod_size
+    -textvariable => \$min_prod_size
 );
 $three_primer_ending_->g_grid( -column => 5, -row => 2, -sticky => "we" );
 
@@ -485,7 +485,7 @@ $min_primer_tm_allowed_->g_grid( -column => 5, -row => 5, -sticky => "we" );
 
 my $add_gc_clamp_ =
   $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$clamp );
-$add_gc_clamp_->g_grid( -column => 7, -row => 2, -sticky => "e" );
+$add_gc_clamp_->g_grid( -column => 7, -row => 2, -sticky => "we" );
 
 my $sodium_chloride_ =
   $out_frame_primers->new_ttk__entry( -width => 3, -textvariable => \$salt );
