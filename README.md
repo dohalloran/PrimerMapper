@@ -17,6 +17,7 @@ Author: Damien O'Halloran, The George Washington University
 ## Getting Started  
 1. You must have `primer3` in your PATH  
 [Click here to get primer3](https://sourceforge.net/projects/primer3/) 
+or on Linux `sudo apt-get install primer3` 
 2. Must have following [BioPerl](https://github.com/bioperl) modules:  
 Bio::SeqIO    
 Bio::Graphics  
