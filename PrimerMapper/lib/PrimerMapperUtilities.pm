@@ -20,7 +20,7 @@ PrimerMapperUtilities - runs various subroutines mainly for primer design
   my $tmp = PrimerMapper->new();
   
 =head3 DESCRIPTION
-The ouput from this package produces graphical primer::sequence
+The output from this package produces graphical primer::sequence
 maps of primer distribution across each sequence and the entire input file
 
 =head4 REFERENCES
@@ -53,151 +53,79 @@ use warnings;
 use base 'Exporter';
 use Cwd;
 
-our @EXPORT =
-  qw/ calcTm calclongTm clean_up /;
+our @EXPORT = qw/ calcTm calclongTm clean_up /;
 
 ####Global Hashes
 my %nn_s = (
-    "AA" => 240,
-    "AC" => 173,
-    "AG" => 208,
-    "AT" => 239,
-    "AN" => 215,
-    "CA" => 129,
-    "CC" => 266,
-    "CG" => 278,
-    "CT" => 208,
-    "CN" => 220,
-    "GA" => 135,
-    "GC" => 267,
-    "GG" => 266,
-    "GT" => 173,
-    "GN" => 210,
-    "TA" => 169,
-    "TC" => 135,
-    "TG" => 129,
-    "TT" => 240,
-    "TN" => 168,
-    "NA" => 168,
-    "NC" => 210,
-    "NG" => 220,
-    "NT" => 215,
-    "NN" => 203,
-    "aa" => 240,
-    "ac" => 173,
-    "ag" => 208,
-    "at" => 239,
-    "an" => 215,
-    "ca" => 129,
-    "cc" => 266,
-    "cg" => 278,
-    "ct" => 208,
-    "cn" => 220,
-    "ga" => 135,
-    "gc" => 267,
-    "gg" => 266,
-    "gt" => 173,
-    "gn" => 210,
-    "ta" => 169,
-    "tc" => 135,
-    "tg" => 129,
-    "tt" => 240,
-    "tn" => 168,
-    "na" => 168,
-    "nc" => 210,
-    "ng" => 220,
-    "nt" => 215,
-    "nn" => 203
+    "AA" => 240, "AC" => 173, "AG" => 208, "AT" => 239, "AN" => 215,
+    "CA" => 129, "CC" => 266, "CG" => 278, "CT" => 208, "CN" => 220,
+    "GA" => 135, "GC" => 267, "GG" => 266, "GT" => 173, "GN" => 210,
+    "TA" => 169, "TC" => 135, "TG" => 129, "TT" => 240, "TN" => 168,
+    "NA" => 168, "NC" => 210, "NG" => 220, "NT" => 215, "NN" => 203,
+    "aa" => 240, "ac" => 173, "ag" => 208, "at" => 239, "an" => 215,
+    "ca" => 129, "cc" => 266, "cg" => 278, "ct" => 208, "cn" => 220,
+    "ga" => 135, "gc" => 267, "gg" => 266, "gt" => 173, "gn" => 210,
+    "ta" => 169, "tc" => 135, "tg" => 129, "tt" => 240, "tn" => 168,
+    "na" => 168, "nc" => 210, "ng" => 220, "nt" => 215, "nn" => 203,
 );
 my %nn_h = (
-    "AA" => 91,
-    "AC" => 65,
-    "AG" => 78,
-    "AT" => 86,
-    "AN" => 80,
-    "CA" => 58,
-    "CC" => 110,
-    "CG" => 119,
-    "CT" => 78,
-    "CN" => 91,
-    "GA" => 56,
-    "GC" => 111,
-    "GG" => 110,
-    "GT" => 65,
-    "GN" => 85,
-    "TA" => 60,
-    "TC" => 56,
-    "TG" => 58,
-    "TT" => 91,
-    "TN" => 66,
-    "NA" => 66,
-    "NC" => 85,
-    "NG" => 91,
-    "NT" => 80,
-    "NN" => 80,
-    "aa" => 91,
-    "ac" => 65,
-    "ag" => 78,
-    "at" => 86,
-    "an" => 80,
-    "ca" => 58,
-    "cc" => 110,
-    "cg" => 119,
-    "ct" => 78,
-    "cn" => 91,
-    "ga" => 56,
-    "gc" => 111,
-    "gg" => 110,
-    "gt" => 65,
-    "gn" => 85,
-    "ta" => 60,
-    "tc" => 56,
-    "tg" => 58,
-    "tt" => 91,
-    "tn" => 66,
-    "na" => 66,
-    "nc" => 85,
-    "ng" => 91,
-    "nt" => 80,
-    "nn" => 80
+    "AA" => 91, "AC" => 65, "AG" => 78, "AT" => 86, "AN" => 80,
+    "CA" => 58, "CC" => 110, "CG" => 119, "CT" => 78, "CN" => 91,
+    "GA" => 56, "GC" => 111, "GG" => 110, "GT" => 65, "GN" => 85,
+    "TA" => 60, "TC" => 56, "TG" => 58, "TT" => 91, "TN" => 66,
+    "NA" => 66, "NC" => 85, "NG" => 91, "NT" => 80, "NN" => 80,
+    "aa" => 91, "ac" => 65, "ag" => 78, "at" => 86, "an" => 80,
+    "ca" => 58, "cc" => 110, "cg" => 119, "ct" => 78, "cn" => 91,
+    "ga" => 56, "gc" => 111, "gg" => 110, "gt" => 65, "gn" => 85,
+    "ta" => 60, "tc" => 56, "tg" => 58, "tt" => 91, "tn" => 66,
+    "na" => 66, "nc" => 85, "ng" => 91, "nt" => 80, "nn" => 80,
 );
 
 ####################################
 ####################################
+
 =head1 calcTm 
  Title   :  calcTm 
- Usage   :  $Tm = calcTm( $_, $DNA_conc, $salt );
+ Usage   :  $Tm = calcTm( $sequence, $DNA_conc, $salt );
  Function:  calculates Tm if primer is <=36bps 
  Returns :  primer Tm
 =cut
 
 sub calcTm {
-    my $sequence = shift;
-    my $DNA_nM   = shift;
-    my $K_mM     = shift;
+    my $sequence = shift;    # BUG FIX: original code iterated over $_ instead
+    my $DNA_nM   = shift;    # of the $sequence parameter, giving wrong Tm
+    my $K_mM     = shift;    # values when $_ was set to something else.
     my $dH       = 0;
     my $dS       = 108;
     my $seq_len  = length($sequence);
     my $i;
 
-    # Compute dH and dS
+    # Compute dH and dS using nearest-neighbour parameters
     for ( $i = 0 ; $i < ( $seq_len - 1 ) ; $i++ ) {
-        my $pair = substr( $_, $i, 2 );
-        $dH += $nn_h{$pair};
-        $dS += $nn_s{$pair};
+        my $pair = substr( $sequence, $i, 2 );    # BUG FIX: was substr($_, ...)
+        if ( exists $nn_h{$pair} ) {
+            $dH += $nn_h{$pair};
+            $dS += $nn_s{$pair};
+        }
+        # Unknown dinucleotide pairs are silently skipped rather than
+        # causing undef warnings.
     }
 
     $dH *= -100.0;
     $dS *= -0.1;
 
-    return $dH / ( $dS + 1.987 * log( $DNA_nM / 4000000000.0 ) ) - 273.15 +
-      16.6 * ( log( $K_mM / 1000.0 ) / log(10) );
+    # Guard against log(0) if DNA_nM is zero
+    return undef unless $DNA_nM > 0 && $K_mM > 0;
+
+    return $dH / ( $dS + 1.987 * log( $DNA_nM / 4_000_000_000.0 ) ) -
+      273.15 + 16.6 * ( log( $K_mM / 1000.0 ) / log(10) );
 }
 
 ####################################
+
 =head1 calclongTm 
  Title   :  calclongTm 
- Usage   :  $Tm = calclongTm( $_, $DNA_conc, $salt, $percentGCrounded );
+ Usage   :  $Tm = calclongTm( $sequence, $DNA_conc, $salt, $percentGCrounded );
  Function:  calculates Tm if primer is >36bps 
  Returns :  primer Tm
 =cut
@@ -208,23 +136,52 @@ sub calclongTm {
     my $K_mM               = shift;
     my $imported_gcPercent = shift;
     my $new_GC             = $imported_gcPercent / 100;
-    return 81.5 + ( 16.6 * ( log( $K_mM / 1000.0 ) / log(10) ) ) +
-      ( 41.0 * $new_GC ) - ( 600.0 / length($sequence) );
+
+    return undef unless $K_mM > 0;
+
+    return 81.5 +
+      ( 16.6 * ( log( $K_mM / 1000.0 ) / log(10) ) ) +
+      ( 41.0 * $new_GC ) -
+      ( 600.0 / length($sequence) );
 }
 
 ####################################
+
 =head1 clean_up 
  Title   :  clean_up 
  Usage   :  -command => sub { clean_up(); }
  Function:  removes temporary files from current working directory
- Returns :  deletes .txt files generated during program execution
+ Returns :  deletes .txt extension files generated during program execution
 =cut
 
 sub clean_up {
     my $dir = cwd();
-    unlink glob "$dir/*.txt";
 
-    print "\nDirectory has been cleaned.\n";
+    # BUG FIX: original used unlink glob which silently fails on some shells.
+    # Also now explicitly targets only the known temp file patterns rather
+    # than deleting every .txt in the cwd, which could destroy user data.
+    my @patterns = (
+        "$dir/primer3_temp.txt",
+        "$dir/specificty.txt",
+        "$dir/specificty_SNP.txt",
+        "$dir/single_viewer.txt",
+        "$dir/single_viewer_SNP.txt",
+        "$dir/GRAPHIC_*.txt",
+        "$dir/*primer3_output",
+        "$dir/*primer3_output_SNP",
+        "$dir/processed_SNP.fasta",
+    );
+
+    my $deleted = 0;
+    for my $pattern (@patterns) {
+        for my $file ( glob($pattern) ) {
+            if ( -f $file ) {
+                unlink $file and $deleted++;
+            }
+        }
+    }
+
+    print "\nDirectory cleaned: $deleted temporary file(s) removed.\n";
 }
 
 ####################################

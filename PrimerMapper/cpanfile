@@ -1,0 +1,12 @@
+requires "Tkx";
+requires "LWP::Simple";
+requires "LWP::UserAgent";
+requires "URI::Escape";
+requires "HTTP::Request::Common";
+requires "Bio::SeqIO";
+requires "Bio::Graphics";
+requires "Bio::SeqFeature::Generic";
+
+on "test" => sub {
+    requires "Test::More";
+};

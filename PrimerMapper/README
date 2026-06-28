@@ -1,41 +1,75 @@
-PrimerMapper
-======================
+PrimerMapper 3.2
+================
 
-The README is used to introduce the module and scripts and provide 
-instructions on how to install them, any machine dependencies it may
-have (for example C compilers and installed libraries) and any other 
-information that should be provided before the module is installed.
+PrimerMapper is a Perl/Tkx GUI for PCR primer design, SNP-flanking primer
+design, allele-specific primer generation, primer visualization, and remote
+NCBI sequence retrieval.
 
 INSTALLATION
 
-To install type the following:
+From this directory:
 
    perl Makefile.PL
    make
    make test
    make install
 
-
 DEPENDENCIES
 
-The package require these modules and libraries:
+External program:
 
-  primer3
+  primer3_core
+
+Required Perl modules:
+
   Tkx
-  Cwd
+  LWP::Simple
+  LWP::UserAgent
   Bio::SeqIO
   Bio::Graphics
   Bio::SeqFeature::Generic
-  List::Util 'max'
-  base 'Exporter'
-  
+
+RUNNING
+
+From the top-level PrimerMapper-fixed directory:
+
+   perl PrimerMapper_driver.pl
+
+On macOS with the dependency-fixed Homebrew Perl/local-lib setup:
+
+   conda deactivate 2>/dev/null || true
+   export PM_PERL="$HOME/perl5-primermapper"
+   export BREW_PERL="$(brew --prefix perl)/bin/perl"
+   eval "$("$BREW_PERL" -I"$PM_PERL/lib/perl5" -Mlocal::lib="$PM_PERL")"
+   cd ~/Desktop/PrimerMapper-fixed
+   "$BREW_PERL" PrimerMapper_driver.pl
+
+INPUT NOTES
+
+Regular primer design requires FASTA input beginning with a descriptor line:
+
+   >example_sequence
+   ATGCGTACGTACGTACGTACGTACGTACGTAC
+
+SNP primer design requires a FASTA header containing pos=N.len, and the base
+at that coordinate must be an IUPAC ambiguity code:
+
+   >example_snp pos=25.len=80
+   ATGCGTACGTACGTACGTACGTACRACGTACGTACGTACGTACGTACGTAC
+
+ERROR-CHECKING CHANGES IN 3.2
+
+PrimerMapper now shows GUI messages rather than stack traces for common input
+and design problems, including invalid product-size ranges, invalid primer
+settings, missing FASTA descriptor lines, missing SNP coordinates, SNP
+coordinates outside the sequence, missing IUPAC SNP bases, and primer3 runs
+that return no primer pairs.
 
 COPYRIGHT AND LICENCE
 
 Copyright (C) 2015 by Damien O'Halloran
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.18.2 or,
-at your option, any later version of Perl 5 you may have available.
-
+This library is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself, either Perl version 5.18.2 or, at your option,
+any later version of Perl 5 you may have available.
 
